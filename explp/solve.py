@@ -6,7 +6,7 @@
 
     
     
-# Last Updated: 2nd July 2018
+# Last Updated: 3rd July 2018
 
 # Non-completed Parts:
 
@@ -146,7 +146,7 @@ def Simplex():
         
         # prevent possible cycling problems to run infinitely
         
-        if times_counter >= 100:
+        if times_counter >= 1000:
             print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
             NoFeasibleSolution = True
             break
