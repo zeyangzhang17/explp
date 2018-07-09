@@ -15,7 +15,7 @@
     # Explanations of Infeasible Solution caused by contradicting constraints
     
 # 2. Branch and Bound Algorithm:
-    # Not yet completed
+    # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
 
 
 import math
@@ -177,7 +177,7 @@ def Simplex():
         print('\nThere is NO Feasible Solutions!\n')
         return NoFeasibleSolution
     else:
-        return optimal_solution_Simplex
+        return tableau, optimal_solution_Simplex
 
 
 # Branch_And_Bound Function:
@@ -187,7 +187,9 @@ def Branch_And_Bound():
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
     
-    Simplex()
+    optimal_solution = Simplex()
+    tableau = optimal_solution[0]
+    optimal_solution_Simplex = optimal_solution[1]
     
     # Non integer-constrained solution -- objective value and variable coefficient
     
@@ -208,7 +210,7 @@ def Branch_And_Bound():
     
         # check if all items in the list are met with integer constraints
     
-        int_list = [x = int(x) for x in List]
+        int_list = [int(x) for x in List]
         
         int_counter = 0
     
@@ -216,7 +218,7 @@ def Branch_And_Bound():
             
             # check if all integer constraints are met
             
-            if int_list[int_counter] == int_con_sol_var[int_counter]:
+            if int_list[int_counter] == List[int_counter]:
                 all_int = True
                 int_counter +=1
                 
@@ -228,35 +230,249 @@ def Branch_And_Bound():
             
             return all_int, int_counter
     
-    list_int_checker(int_con_sol_var)
+    int_checker = list_int_checker(int_con_sol_var)
+    all_int = int_checker[0]
+    int_counter = int_checker[1]
     
     while all_int == False:
         
+        # use the first non-integer and compute floor and ceiling
         
+        bnb_var_index = Integer_Index[int_counter]
+        bnb_var = optimal_solution_Simplex[1][bnb_var_index]
+        floor_bnb = np.floor(bnb_var)
+        ceil_bnb = np.ceil(bnb_var)
         
+        # Branch 1: Floor
         
+        pivoting_floor = tableau.copy()
+                
+        # take the targetted non-integer variable out of objectives and constraints
         
+        pivoting_floor.iloc[:,0] -= pivoting_floor.iloc[:,bnb_var_index+1] * (pivoting_floor.iloc[0,bnb_var_index+1] * floor_bnb)
+        pivoting_floor.drop([variable_names[bnb_var_index]], axis = 1)
+        pivoting = pivoting_floor
         
+        # Then run the same steps as Simplex function
         
-        
-    
-    
+        pivoting_col_list = list(pivoting)
+        times_counter = 0
+        pivot_column_record = []
+        pivot_row_record = []
+        NoFeasibleSolution = False
+
+        while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
+            times_counter += 1
+            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+            pivot_column_record.append(pivot_column)
+            test_ratios = []
+            pt_i = 1
+
+            for pt_i in range(1,con_count+1):
+                try:
+                    ratio = pivoting[bound_names[0]][pt_i]/pivoting[pivoting_col_list[pivot_column]][pt_i]
+                except ZeroDivisionError:
+                    ratio = 0
+                test_ratios.append(ratio)
+                pt_i += 1
+
+            if all(ratio <= 0 for ratio in test_ratios) == True:
+                NoFeasibleSolution = True
+                print('Error! The Problem is UN-BOUNDED !')
+                break                
+
+            pivot_row = test_ratios.index(min([ratio for ratio in test_ratios if ratio > 0]))+1
+            pivot_row_record.append(pivot_row)
+            pivot_value = pivoting.iloc[pivot_row, pivot_column]
+            pivoting.iloc[pivot_row,:] = pivoting.iloc[pivot_row,:] / pivot_value
+            pi_count = 0
             
+            for pi_count in range(con_count+1):
+                if pi_count != pivot_row:
+                    pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
+                    pi_count += 1
+                else:
+                    continue
+
+            if times_counter >= 1000:
+                print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
+                NoFeasibleSolution = True
+                break
+
+        obj_optimal = pivoting.iloc[0,0]
+        slack_optimal = pivoting.iloc[1:,0].tolist()
+        slack_counter = 0
+
+        for slack_counter in range(len(pivot_row_record)):
+            slack_optimal[pivot_row_record[slack_counter]-1] = 0
+            slack_counter += 1
+
+        var_optimal = [0] * var_count
+        var_counter = 0
+
+        for var_counter in range(len(pivot_row_record)):
+            var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            var_counter += 1
+            
+        # add back fixed variable (floor value) to the optimal solution
         
+        var_optimal += [floor_bnb]
+        var_optimal.insert(bnb_var_index, var_optimal.pop())
         
+        Floor_optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
+        Floor_NoFS = NoFeasibleSolution
+
+        if NoFeasibleSolution == True:
+            print('\nThere is NO Feasible Solutions!\n')
+            return Floor_NoFS
+        else:
+            return Floor_optimal_solution_Simplex
+
+
+        # Same for the ceiling
+        # Branch 2: Ceiling
         
+        pivoting_ceiling = tableau.copy()
+                
+        pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceiling_bnb)
+        pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
+        pivoting = pivoting_ceiling
         
+        pivoting_col_list = list(pivoting)
+        times_counter = 0
+        pivot_column_record = []
+        pivot_row_record = []
+        NoFeasibleSolution = False
+
+        while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
+            times_counter += 1
+            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+            pivot_column_record.append(pivot_column)
+            test_ratios = []
+            pt_i = 1
+
+            for pt_i in range(1,con_count+1):
+                try:
+                    ratio = pivoting[bound_names[0]][pt_i]/pivoting[pivoting_col_list[pivot_column]][pt_i]
+                except ZeroDivisionError:
+                    ratio = 0
+                test_ratios.append(ratio)
+                pt_i += 1
+
+            if all(ratio <= 0 for ratio in test_ratios) == True:
+                NoFeasibleSolution = True
+                print('Error! The Problem is UN-BOUNDED !')
+                break                
+
+            pivot_row = test_ratios.index(min([ratio for ratio in test_ratios if ratio > 0]))+1
+            pivot_row_record.append(pivot_row)
+            pivot_value = pivoting.iloc[pivot_row, pivot_column]
+            pivoting.iloc[pivot_row,:] = pivoting.iloc[pivot_row,:] / pivot_value
+            pi_count = 0
+            
+            for pi_count in range(con_count+1):
+                if pi_count != pivot_row:
+                    pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
+                    pi_count += 1
+                else:
+                    continue
+
+            if times_counter >= 1000:
+                print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
+                NoFeasibleSolution = True
+                break
+
+        obj_optimal = pivoting.iloc[0,0]
+        slack_optimal = pivoting.iloc[1:,0].tolist()
+        slack_counter = 0
+
+        for slack_counter in range(len(pivot_row_record)):
+            slack_optimal[pivot_row_record[slack_counter]-1] = 0
+            slack_counter += 1
+
+        var_optimal = [0] * var_count
+        var_counter = 0
+
+        for var_counter in range(len(pivot_row_record)):
+            var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            var_counter += 1
         
-         
+        # add back fixed variable (ceiling value) to the optimal solution
         
+        var_optimal += [ceiling_bnb]
+        var_optimal.insert(bnb_var_index, var_optimal.pop())
+
+        Ceiling_optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
+        Ceiling_NoFS = NoFeasibleSolution
+
+        if NoFeasibleSolution == True:
+            print('\nThere is NO Feasible Solutions!\n')
+            return Ceiling_NoFS
+        else:
+            return Ceiling_optimal_solution_Simplex
+
         
+        # Comparing Floor branch and Ceiling Branch
+        
+        if Floor_NoFS == True and Ceiling_NoFS == True:
+            
+            # NEED FURTHER EXPLANATIONS on TRIANGLE SITUATIONS and Solutions to it
+            
+            print('Error! There is No Feasible Solutions, probably due to the Triangle Situations')
+            break
+        
+        elif Floor_NoFS == True and Ceiling_NoFS == False:
+            
+            non_int_con_sol_obj = Ceiling_optimal_solution_Simplex[0]
+            non_int_con_sol_var = Ceiling_optimal_solution_Simplex[1]
+            non_int_con_sol_slack = Ceiling_optimal_solution_Simplex[2]
+        
+        elif Floor_NoFS == False and Ceiling_NoFS == True:
+            
+            non_int_con_sol_obj = Floor_optimal_solution_Simplex[0]
+            non_int_con_sol_var = Floor_optimal_solution_Simplex[1]
+            non_int_con_sol_slack = Floor_optimal_solution_Simplex[2]
+        
+        else:
+            
+            if Ceiling_optimal_solution_Simplex[0] >= Floor_optimal_solution_Simplex[0]:
+                
+                non_int_con_sol_obj = Ceiling_optimal_solution_Simplex[0]
+                non_int_con_sol_var = Ceiling_optimal_solution_Simplex[1]
+                non_int_con_sol_slack = Ceiling_optimal_solution_Simplex[2]
+            
+            else:
+                
+                non_int_con_sol_obj = Floor_optimal_solution_Simplex[0]
+                non_int_con_sol_var = Floor_optimal_solution_Simplex[1]
+                non_int_con_sol_slack = Floor_optimal_solution_Simplex[2]
+        
+        # For possible further iterations, set optimal_solution_Simplex to current solution
+        
+        optimal_solution_Simplex = [non_int_con_sol_obj, non_int_con_sol_var, non_int_con_sol_slack]
+        
+        # check if all integer constraints are met now
+        # if not, return all_int == False and iterate again
+        
+        int_con_sol_var = []
+    
+        for integer_index in Integer_Index:
+            int_con_sol_var.append(non_int_con_sol_var[integer_index])
+            
+        list_int_checker(int_con_sol_var)
+        int_checker = list_int_checker(int_con_sol_var)
+        all_int = int_checker[0]
+
+
+    # sort the solution into the same form as Simplex Function for futher iterations
+                
     obj_BB = non_int_con_sol_obj
     var_BB = non_int_con_sol_var
     slack_BB = non_int_con_sol_slack
         
     optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
-        
-    print('All integer constraints are met!')
+    
+    print('All integer constraints are met!')  
     return optimal_solution_Branch_and_Bound
 
 
