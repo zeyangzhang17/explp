@@ -1,6 +1,6 @@
 # explp
 
-Generating Explanations of Linear Optimisation Solution
+Generating Explanations of Linear Optimisation Solutions
 
 Last Updated: 
 9th July 2018
