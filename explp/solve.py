@@ -3,21 +3,19 @@
 # Functions: 
     # solve.Simplex()
     # solve.Branch_And_Bound()
+    # solve.Solve()
 
     
     
-# Last Updated: 3rd July 2018
+# Last Updated: 9th July 2018
 
 # Non-completed Parts:
 
-# 1. Simplex Algorithm: 
-    # There might be some problems in the algorithm as most examples yield right answer; 
-    # Yet for a few examples (especially when there are a lot of negative coefficients) the algorithm has failed to give the right answer
-    
-    # Infeasible caused by contradicting constraints
+# 1. Simplex Algorithm:    
+    # Explanations of Infeasible Solution caused by contradicting constraints
     
 # 2. Branch and Bound Algorithm:
-    # Non-completed
+    # Not yet completed
 
 
 import math
@@ -177,7 +175,7 @@ def Simplex():
     
     if NoFeasibleSolution == True:
         print('\nThere is NO Feasible Solutions!\n')
-        return tableau, pivoting, test_ratios
+        return NoFeasibleSolution
     else:
         return optimal_solution_Simplex
 
@@ -186,43 +184,99 @@ def Simplex():
 
 def Branch_And_Bound():
     
-    # firstly do relaxation of all integer constraint 
+    # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
     
     Simplex()
     
-    # Non integer-constrained solution -- objective value 
+    # Non integer-constrained solution -- objective value and variable coefficient
     
     non_int_con_sol_obj = optimal_solution_Simplex[0]
+    non_int_con_sol_var = optimal_solution_Simplex[1]
+    non_int_con_sol_slack = optimal_solution_Simplex[2]
     
-    # interger constrained solution -- variable value
+    # record all interger constrained variables
     
     int_con_sol_var = []
     
     for integer_index in Integer_Index:
         int_con_sol_var.append(optimal_solution_Simplex[1][integer_index])
         
+    # check if all required integer constraint is satisfied
+        
     def list_int_checker(List=[]):
     
-        # check if all item in the list is met with integer contraints
+        # check if all items in the list are met with integer constraints
     
         int_list = [x = int(x) for x in List]
+        
+        int_counter = 0
     
-        return int_list == List
+        while int_counter in range(len(int_list)):
+            
+            # check if all integer constraints are met
+            
+            if int_list[int_counter] == int_con_sol_var[int_counter]:
+                all_int = True
+                int_counter +=1
+                
+            # if not, return the index of the first non-integer
+            
+            else:
+                all_int = False
+                break
+            
+            return all_int, int_counter
     
-    while list_int_checker(int_con_sol_var) == False:
+    list_int_checker(int_con_sol_var)
+    
+    while all_int == False:
         
         
         
-    obj_BB = 
-    var_BB = 
-    slack_BB = 
+        
+        
+        
+        
+        
+    
+    
+            
+        
+        
+        
+        
+        
+         
+        
+        
+    obj_BB = non_int_con_sol_obj
+    var_BB = non_int_con_sol_var
+    slack_BB = non_int_con_sol_slack
         
     optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
         
     print('All integer constraints are met!')
     return optimal_solution_Branch_and_Bound
 
+
+
+# Solve Function:
+
+def Solve():
+    
+    # check if integer constraints exist
+    # run Simplex Algorithm if not, run Branch and Bound Algorithm otherwise
+    
+    try:
+        Integer_Variable_Name
+    except NameError:
+        return Simplex()
+    else: 
+        return Branch_And_Bound()
+
+    
+Solve()
 
 
 # The End of Solve Module
