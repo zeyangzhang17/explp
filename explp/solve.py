@@ -187,9 +187,10 @@ def Branch_And_Bound():
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
     
-    optimal_solution = Simplex()
-    tableau = optimal_solution[0]
-    optimal_solution_Simplex = optimal_solution[1]
+    global_optimal_solution = Simplex()
+
+    tableau = global_optimal_solution[0]
+    optimal_solution_Simplex = global_optimal_solution[1]
     
     # Non integer-constrained solution -- objective value and variable coefficient
     
@@ -206,7 +207,7 @@ def Branch_And_Bound():
         
     # check if all required integer constraint is satisfied
         
-    def list_int_checker(List=[]):
+    def list_int_checker(List):
     
         # check if all items in the list are met with integer constraints
     
@@ -214,7 +215,7 @@ def Branch_And_Bound():
         
         int_counter = 0
     
-        while int_counter in range(len(int_list)):
+        while int_counter in range(len(List)):
             
             # check if all integer constraints are met
             
@@ -488,7 +489,7 @@ def Solve():
         Integer_Variable_Name
     except NameError:
         return Simplex()
-    else: 
+    else:
         return Branch_And_Bound()
 
     
