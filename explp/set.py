@@ -8,7 +8,7 @@
 
     
     
-# Last Updated: 2nd July 2018
+# Last Updated: 9th July 2018
 
 
 
@@ -19,6 +19,8 @@ import pandas as pd
 # Objective Function:
 
 def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
+    
+    global obj_names, obj_coef, variable_names, obj_max
     
     # check if the problem is multi-objective
     
@@ -59,6 +61,8 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
 # Multi_objective Function:
 
 def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
+    
+    global multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max
     
     # check if the problem is single objective
     
@@ -130,6 +134,8 @@ def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coe
 
 def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bound_Value=[], Maximise=False, Type=[]):
     
+    global constraint_names, constraint, bound_names, bound, constraint_type
+    
     # check for the length of constraints name input
     
     len_con_name = len(Constraint_Name)
@@ -166,11 +172,13 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
 
 # Integer_constraint Function:
 
-def integer_constraint(Integer_Variable_Name = []):
+def integer_constraint(Integer_Variable_Names = []):
+    
+    global Integer_Variable_Name, Integer_Index
     
     # check if the integer variable name is in the list of variables
     
-    if set(Integer_Variable_Name).issubset(variable_names) == False:
+    if set(Integer_Variable_Names).issubset(variable_names) == False:
         print('Error! The Integer Variable Name DOES NOT Match with Variable Name in Objectives')
     
     # compute the index of integer variables
@@ -179,9 +187,11 @@ def integer_constraint(Integer_Variable_Name = []):
     
     index_counter = 0
     
-    for index_counter in range(len(Integer_Variable_Name)):
-        Integer_Index.append(obj_names.index(Integer_Variable_Name[index_counter]))
+    for index_counter in range(len(Integer_Variable_Names)):
+        Integer_Index.append(obj_names.index(Integer_Variable_Names[index_counter]))
         index_counter += 1
+    
+    Integer_Variable_Name = Integer_Variable_Names
     
     return Integer_Variable_Name, Integer_Index
 
