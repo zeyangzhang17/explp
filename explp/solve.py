@@ -16,6 +16,7 @@
     
 # 2. Branch and Bound Algorithm:
     # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
+    # There are still something wrong with b&b algorithm, yielding wrong answer in some cases
 
 
 import math
