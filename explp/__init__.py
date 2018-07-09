@@ -1,9 +1,6 @@
 
 # coding: utf-8
 
-# In[ ]:
-
-
 __author__ = 'Zeyang ZHANG'
-__all__ = ['create','objective','constriant','solve','analysis','alternative','output']
+__all__ = ['set','solve','sensitivity_analysis','alternative']
 
