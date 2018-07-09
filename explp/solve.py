@@ -229,7 +229,7 @@ def Branch_And_Bound():
                 all_int = False
                 break
             
-            return all_int, int_counter
+        return all_int, int_counter
     
     int_checker = list_int_checker(int_con_sol_var)
     all_int = int_checker[0]
@@ -255,6 +255,9 @@ def Branch_And_Bound():
         pivoting = pivoting_floor
         
         # Then run the same steps as Simplex function
+        
+        var_count = len(variable_names)-1
+        con_count = len(constraint_names)
         
         pivoting_col_list = list(pivoting)
         times_counter = 0
@@ -338,6 +341,9 @@ def Branch_And_Bound():
         pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceiling_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
         pivoting = pivoting_ceiling
+        
+        var_count = len(variable_names)-1
+        con_count = len(constraint_names)
         
         pivoting_col_list = list(pivoting)
         times_counter = 0
