@@ -33,7 +33,11 @@ def optimal_var():
     optimal_variable_value = optimal_solution[1]
     optimal_slack_value = optimal_solution[2]
     
+    # introduce a spacing for table
+    
     spacing = '...'
+    
+    # record which constraint is violated if optimal solution + / - 1
     
     violated_constraint_minus = []
     violated_constraint_plus = []
@@ -42,6 +46,9 @@ def optimal_var():
     constraint_counter = 0
     
     for variable_counter in range(len(variable_names)):
+        
+        # temp list to record violated constraints for a single variable
+        # reset to empty for each variable 
         
         temp_list_minus = []
         temp_list_plus = []
@@ -56,10 +63,14 @@ def optimal_var():
                 
             constraint_counter += 1
         
+        # record violated constraints for the variables
+        
         violated_constraint_minus.append(temp_list_minus)
         violated_constraint_plus.append(temp_list_plus)
             
         variable_counter += 1
+    
+    # set empty violated constraints to None
     
     modify_counter = 0
     
@@ -73,6 +84,7 @@ def optimal_var():
                 
         modify_counter += 1
         
+    # form a dataframe to output results
     
     col_var_changes = ['Optimal Solution - 1', 'Optimal Solution', 'Optimal Solution + 1']
     row_var_changes = []
@@ -80,6 +92,9 @@ def optimal_var():
     row_counter = 0
     
     for row_counter in range(len(variable_names)):
+        
+        # add line spacing for a better view
+        
         row_var_changes.append(spacing)
         row_var_changes.append('Value of ' + variable_names[row_counter])
         row_var_changes.append('Value of ' + obj_names[0])
@@ -87,6 +102,8 @@ def optimal_var():
         row_counter += 1
         
     row_var_changes.append(spacing)
+    
+    # fill in the numbers and violated constraints, and fill NaN with empty
     
     table_var_changes = pd.DataFrame(columns = col_var_changes, index = row_var_changes).fillna('')
     
@@ -106,6 +123,9 @@ def optimal_var():
         negative_counter = 0
         
         for negative_counter in range(3):
+            
+            # to check if any variables are negative, which will cause infeasible
+            
             if table_var_changes.iloc[fill_counter+1,negative_counter] < 0:
                 table_var_changes.iloc[fill_counter+2,negative_counter] = 'INFESIBLE'
                 table_var_changes.iloc[fill_counter+3,negative_counter] = variable_names[int(fill_counter/4)] + ' >= 0'
