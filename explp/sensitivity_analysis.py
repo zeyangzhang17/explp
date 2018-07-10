@@ -1,11 +1,11 @@
 # Module: sensitivity_analysis
 
 # Functions:
-    # sensitivity_analysis.optimal_var()
-    # sensitivity_analysis.obj_coef()
-    # sensitivity_analysis.con_bound()
-    # sensitivity_analysis.con_coef()
-    # sensitivity_analysis.SA()
+    # sensitivity_analysis.Optimal_Var()
+    # sensitivity_analysis.Obj_Coef()
+    # sensitivity_analysis.Con_Bound()
+    # sensitivity_analysis.Con_Coef()
+    # sensitivity_analysis.Sensitivity_Analysis()
 
     
     
@@ -23,7 +23,7 @@ from explp import solve
 # Aim to explain why the optimal solution is the best
 # By changing optimal solution up and down 1 unit to see how the objective changes and whether constraints are violated
     
-def optimal_var():
+def Optimal_Var():
     
     global table_var_changes
     
@@ -110,8 +110,6 @@ def optimal_var():
     fill_counter = 0
     
     for fill_counter in range(0,4*(len(variable_names)-1)+1,4):
-        
-        index_counter = fill_counter
     
         table_var_changes.iloc[fill_counter,:] = [spacing]*3
         table_var_changes.iloc[fill_counter+1,:] = [optimal_variable_value[int(fill_counter/4)]-1, optimal_variable_value[int(fill_counter/4)], optimal_variable_value[int(fill_counter/4)]+1] 
@@ -137,15 +135,86 @@ def optimal_var():
     
     
 # objective coefficient sensitivity analysis function
+# Non-completed: Bugs in obj_coef & original_obj_coef
 
-def obj_coef():
-
+def Obj_Coef():
+    
+    global table_obj_coef
+    
+    original_obj_coef = obj_coef.copy()
+    
+    original_optimal_solution = optimal_solution_Simplex.copy()
+    
+    new_optimal_minus = []
+    new_optimal_plus = []
+    
+    coef_counter = 0
+    
+    for coef_counter in range(len(variable_names)):
+        
+        obj_coef = original_obj_coef
+        obj_coef[coef_counter] -= 1
+        obj_minus = Simplex()
+        
+        if NoFeasibleSolution == True:
+            new_optimal_minus.append('INFESIBLE')
+        else:
+            new_optimal_minus.append(obj_minus[1][0])
+        
+        obj_coef = original_obj_coef
+        obj_coef[coef_counter] += 1
+        obj_plus = Simplex()
+        
+        if NoFeasibleSolution == True:
+            new_optimal_plus.append('INFESIBLE')
+        else:
+            new_optimal_plus.append(obj_plus[1][0])
+        
+        coef_counter += 1
+    
+    spacing = '...'
+    
+    col_obj_coef = ['Coefficient - 1', 'Coefficient', 'Coefficient + 1']
+    row_obj_coef = []
+    
+    row_counter = 0
+    
+    for row_counter in range(len(variable_names)):
+        row_obj_coef.append(spacing)
+        row_obj_coef.append('Coefficients of ' + variable_names[row_counter])
+        row_obj_coef.append('Value of ' + obj_names[0])
+        row_obj_coef.append('Changes in Objective Values')
+        row_counter += 1
+        
+    row_obj_coef.append(spacing)
+    
+    table_obj_coef = pd.DataFrame(columns = col_obj_coef, index = row_obj_coef).fillna('')
+    
+    fill_counter = 0
+    
+    for fill_counter in range(0,4*(len(variable_names)-1)+1,4):
+    
+        table_obj_coef.iloc[fill_counter,:] = [spacing]*3
+        table_obj_coef.iloc[fill_counter+1,:] = [original_obj_coef[int(fill_counter/4)]-1, original_obj_coef[int(fill_counter/4)], original_obj_coef[int(fill_counter/4)]+1] 
+        table_obj_coef.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)]]
+        table_obj_coef.iloc[fill_counter+3,0] = table_obj_coef.iloc[fill_counter+2,0] - table_obj_coef.iloc[fill_counter+2,1]
+        table_obj_coef.iloc[fill_counter+3,1] = 0
+        table_obj_coef.iloc[fill_counter+3,2] = table_obj_coef.iloc[fill_counter+2,2] - table_obj_coef.iloc[fill_counter+2,1]
+        
+        infeasible_counter = 0
+        
+        for negative_counter in range(3):
+            if table_var_changes.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
+                table_var_changes.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
+    
+    
+    return table_obj_coef
 
 
     
 # constraint bound sensitivity analysis function
 
-def con_bound():
+def Con_Bound():
 
     
     
@@ -153,20 +222,20 @@ def con_bound():
     
 # constraint coefficient sensitivity analysis function
 
-def con_coef():
+def Con_Coef():
     
 
     
     
-# SA function to run different sets of sensitivity analysis based on various situations
+# Sensitivity Analysis function to run different sets of sensitivity analysis based on various situations
 # And output explanations
 
-def SA():
+def Sensitivity_Analysis():
     
 
     
     
-SA()
+Sensitivity_Analysis()
 
 
 # The End of Sensitivity Analysis Module
