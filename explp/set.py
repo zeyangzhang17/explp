@@ -8,7 +8,7 @@
 
     
     
-# Last Updated: 9th July 2018
+# Last Updated: 13th July 2018
 
 
 
@@ -19,8 +19,6 @@ import pandas as pd
 # Objective Function:
 
 def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
-    
-    global obj_names, obj_coef, variable_names, obj_max
     
     # check if the problem is multi-objective
     
@@ -61,8 +59,6 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
 # Multi_objective Function:
 
 def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
-    
-    global multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max
     
     # check if the problem is single objective
     
@@ -134,8 +130,6 @@ def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coe
 
 def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bound_Value=[], Maximise=False, Type=[]):
     
-    global constraint_names, constraint, bound_names, bound, constraint_type
-    
     # check for the length of constraints name input
     
     len_con_name = len(Constraint_Name)
@@ -173,8 +167,6 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
 # Integer_constraint Function:
 
 def integer_constraint(Integer_Variable_Names = []):
-    
-    global Integer_Variable_Name, Integer_Index
     
     # check if the integer variable name is in the list of variables
     
