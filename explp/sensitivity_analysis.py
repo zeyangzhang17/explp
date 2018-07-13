@@ -4,12 +4,12 @@
     # sensitivity_analysis.Optimal_Var()
     # sensitivity_analysis.Obj_Coef()
     # sensitivity_analysis.Con_Bound()
-    # sensitivity_analysis.Con_Coef()
+    # sensitivity_analysis.Con_Remove()
     # sensitivity_analysis.Sensitivity_Analysis()
 
     
     
-# Last Updated: 10th July 2018
+# Last Updated: 13th July 2018
 
 
 
@@ -20,12 +20,13 @@ from explp import solve
 
 
 # optimal varible sensitivity analysis function
+
+# Potential further improvement: percentage changes
+
 # Aim to explain why the optimal solution is the best
 # By changing optimal solution up and down 1 unit to see how the objective changes and whether constraints are violated
     
 def Optimal_Var():
-    
-    global table_var_changes
     
     optimal_solution = optimal_solution_Simplex.copy()
     
@@ -135,11 +136,11 @@ def Optimal_Var():
     
     
 # objective coefficient sensitivity analysis function
+
 # Non-completed: Bugs in obj_coef & original_obj_coef
+# Potential further improvement: percentage changes
 
 def Obj_Coef():
-    
-    global table_obj_coef
     
     original_obj_coef = obj_coef.copy()
     
@@ -220,9 +221,9 @@ def Con_Bound():
     
     
     
-# constraint coefficient sensitivity analysis function
+# constraint remove sensitivity analysis function
 
-def Con_Coef():
+def Con_Remove():
     
 
     
