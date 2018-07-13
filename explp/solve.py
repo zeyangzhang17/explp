@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 9th July 2018
+# Last Updated: 13th July 2018
 
 # Non-completed Parts:
 
@@ -24,8 +24,6 @@ import numpy as np
 
 
 def Simplex():
-    
-    global tableau, optimal_solution_Simplex, NoFeasibleSolution
     
     # count for variables and constraints for further uses
     
@@ -186,8 +184,6 @@ def Simplex():
 
 def Branch_And_Bound():
     
-    global optimal_solution_Branch_and_Bound
-    
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
     
@@ -212,8 +208,6 @@ def Branch_And_Bound():
     # check if all required integer constraint is satisfied
         
     def list_int_checker(List):
-        
-        global all_int, int_counter
     
         # check if all items in the list are met with integer constraints
     
