@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 13th July 2018
+# Last Updated: 20th July 2018
 
 # Non-completed Parts:
 
@@ -101,7 +101,29 @@ def Simplex():
     
         # choose pivot column: the most negative value of reduced costs
         
-        pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+        # find the most negative value
+        
+        if times_counter <= len(con_count):
+            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+            
+        # if cycling, use Bland's rule to find the first negative value
+        
+        else:
+            pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+            list_cyc_counter = 0
+            for list_cyc_counter in range(len(pivot_list_cyc)):
+                if pivot_list_cyc[list_cyc_counter] < 0:
+                    first_negative_index = list_cyc_counter
+                    break
+                else:
+                    list_cyc_counter += 1
+            
+            pivot_column = first_negative_index + 1
+            
+            # reset time counter to 0
+            
+            times_counter = 0
+        
         pivot_column_record.append(pivot_column)
         
         # compute test ratio (bound / pivot column) and select the smallest
@@ -141,13 +163,6 @@ def Simplex():
                 pi_count += 1
             else:
                 continue
-        
-        # prevent possible cycling problems to run infinitely
-        
-        if times_counter >= 1000:
-            print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
-            NoFeasibleSolution = True
-            break
     
     obj_optimal = pivoting.iloc[0,0]
     
@@ -267,8 +282,28 @@ def Branch_And_Bound():
 
         while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
             times_counter += 1
-            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+        
+            if times_counter <= len(con_count):
+                pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+
+            else:
+                pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+                list_cyc_counter = 0
+                for list_cyc_counter in range(len(pivot_list_cyc)):
+                    if pivot_list_cyc[list_cyc_counter] < 0:
+                        first_negative_index = list_cyc_counter
+                        break
+                    else:
+                        list_cyc_counter += 1
+
+                pivot_column = first_negative_index + 1
+            
+                # reset time counter to 0
+
+                times_counter = 0
+
             pivot_column_record.append(pivot_column)
+            
             test_ratios = []
             pt_i = 1
 
@@ -296,12 +331,7 @@ def Branch_And_Bound():
                     pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
                     pi_count += 1
                 else:
-                    continue
-
-            if times_counter >= 1000:
-                print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
-                NoFeasibleSolution = True
-                break
+                    continue        
 
         obj_optimal = pivoting.iloc[0,0]
         slack_optimal = pivoting.iloc[1:,0].tolist()
@@ -353,8 +383,28 @@ def Branch_And_Bound():
 
         while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
             times_counter += 1
-            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+        
+            if times_counter <= len(con_count):
+                pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+
+            else:
+                pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+                list_cyc_counter = 0
+                for list_cyc_counter in range(len(pivot_list_cyc)):
+                    if pivot_list_cyc[list_cyc_counter] < 0:
+                        first_negative_index = list_cyc_counter
+                        break
+                    else:
+                        list_cyc_counter += 1
+
+                pivot_column = first_negative_index + 1
+            
+                # reset time counter to 0
+
+                times_counter = 0
+
             pivot_column_record.append(pivot_column)
+            
             test_ratios = []
             pt_i = 1
 
@@ -423,9 +473,6 @@ def Branch_And_Bound():
         
         if Floor_NoFS == True and Ceiling_NoFS == True:
             
-            # NEED FURTHER EXPLANATIONS on TRIANGLE SITUATIONS and Solutions to it
-            
-            print('Error! There is No Feasible Solutions, probably due to the Triangle Situations')
             break
         
         elif Floor_NoFS == True and Ceiling_NoFS == False:
@@ -442,7 +489,7 @@ def Branch_And_Bound():
         
         else:
             
-            if Ceiling_optimal_solution_Simplex[0] >= Floor_optimal_solution_Simplex[0]:
+            if int(Ceiling_optimal_solution_Simplex[0]) >= int(Floor_optimal_solution_Simplex[0]):
                 
                 non_int_con_sol_obj = Ceiling_optimal_solution_Simplex[0]
                 non_int_con_sol_var = Ceiling_optimal_solution_Simplex[1]
