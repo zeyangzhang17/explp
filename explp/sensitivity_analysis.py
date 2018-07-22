@@ -11,6 +11,10 @@
     
 # Last Updated: 22nd July 2018
 
+# Further Improvement:
+    # 1. add explanations in sensitivity analysis function
+    # 2. bugs in con_remove, probably also due to shallow and deep copy
+
 
 
 import numpy as np
@@ -197,16 +201,17 @@ def Obj_Coef():
         table_obj_coef.iloc[fill_counter,:] = [spacing]*3
         table_obj_coef.iloc[fill_counter+1,:] = [original_obj_coef[int(fill_counter/4)]-1, original_obj_coef[int(fill_counter/4)], original_obj_coef[int(fill_counter/4)]+1] 
         table_obj_coef.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)]]
-        table_obj_coef.iloc[fill_counter+3,0] = table_obj_coef.iloc[fill_counter+2,0] - table_obj_coef.iloc[fill_counter+2,1]
-        table_obj_coef.iloc[fill_counter+3,1] = 0
-        table_obj_coef.iloc[fill_counter+3,2] = table_obj_coef.iloc[fill_counter+2,2] - table_obj_coef.iloc[fill_counter+2,1]
         
         infeasible_counter = 0
         
-        for negative_counter in range(3):
+        for infeasible_counter in range(3):
             if table_obj_coef.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
                 table_obj_coef.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
-    
+            else:
+                table_obj_coef.iloc[fill_counter+3,0] = table_obj_coef.iloc[fill_counter+2,0] - table_obj_coef.iloc[fill_counter+2,1]
+                table_obj_coef.iloc[fill_counter+3,1] = None
+                table_obj_coef.iloc[fill_counter+3,2] = table_obj_coef.iloc[fill_counter+2,2] - table_obj_coef.iloc[fill_counter+2,1]
+
     
     return table_obj_coef
 
@@ -276,23 +281,24 @@ def Con_Bound():
         table_bound.iloc[fill_counter,:] = [spacing]*3
         table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]+1] 
         table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)]]
-        table_bound.iloc[fill_counter+3,0] = table_bound.iloc[fill_counter+2,0] - table_bound.iloc[fill_counter+2,1]
-        table_bound.iloc[fill_counter+3,1] = 0
-        table_bound.iloc[fill_counter+3,2] = table_bound.iloc[fill_counter+2,2] - table_bound.iloc[fill_counter+2,1]
         
         infeasible_counter = 0
         
-        for negative_counter in range(3):
+        for infeasible_counter in range(3):
             if table_bound.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
                 table_bound.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
-        
+            else:
+                table_bound.iloc[fill_counter+3,0] = table_bound.iloc[fill_counter+2,0] - table_bound.iloc[fill_counter+2,1]
+                table_bound.iloc[fill_counter+3,1] = None
+                table_bound.iloc[fill_counter+3,2] = table_bound.iloc[fill_counter+2,2] - table_bound.iloc[fill_counter+2,1]
+
         # constraint bound less than 0 is not making sense
         
         if table_bound.iloc[fill_counter+1,0] < 0:
+            table_bound.iloc[fill_counter+1,0] = 'INFESIBLE'
             table_bound.iloc[fill_counter+2,0] = 'INFESIBLE'
             table_bound.iloc[fill_counter+3,0] = 'INFESIBLE'
-            
-    
+                
     
     return table_bound
 
@@ -303,13 +309,98 @@ def Con_Bound():
 
 def Con_Remove():
     
-
+    original_optimal_solution = optimal_solution_Simplex[:]
     
+    original_constraint_names = constraint_names[:]
+    original_constraint = constraint[:]
+    original_bound = bound[:]
+    
+    soft_con_index = []
+    
+    soft_con_counter = 0
+    
+    for soft_con_counter in range(len(original_constraint_names)):
+        if constraint_type[soft_con_counter] == 'soft':
+            soft_con_index.append(soft_con_counter)
+            soft_con_counter += 1
+            
+    if len(soft_con_index) == 0:
+        
+        # if no soft constraints, then no constraints can be removed
+        
+        table_con_remove = None
+        print('There are no soft constraints to be removed.')
+        
+        return table_con_remove
+    
+    else:
+        
+        # remove each soft constraints to see the changes, similiar to the previous procedures
+        
+        optimal_excl_soft = []
+        
+        for soft_con_remove_counter in soft_con_index:
+            
+            constraint_names = original_constraint_names
+            constraint = original_constraint
+            bound = original_bound
+            
+            del constraint_names[soft_con_remove_counter]
+            del constraint[soft_con_remove_counter]
+            del bound[soft_con_remove_counter]
+            
+            Simplex_excl_soft = Simplex()
+            
+            if NoFeasibleSolution == True:
+                optimal_excl_soft.append('INFESIBLE')
+            else:            
+                optimal_excl_soft.append(Simplex_excl_soft[1][0])
+        
+        spacing = '...'
+
+        col_con_remove = ['Original', 'After Removal']
+        row_con_remove = []
+
+        row_counter = 0
+
+        for row_counter in range(len(soft_con_index)):
+            row_con_remove.append(spacing)
+            row_con_remove.append('Remove of soft constraint ' + original_constraint_names[soft_con_index[row_counter]])
+            row_con_remove.append('Value of ' + obj_names[0])
+            row_con_remove.append('Changes in Objective Values')
+            row_counter += 1
+
+        row_con_remove.append(spacing)
+
+        table_con_remove = pd.DataFrame(columns = col_con_remove, index = row_con_remove).fillna('')
+
+        fill_counter = 0
+
+        for fill_counter in range(0,4*(len(soft_con_index)-1)+1,4):
+
+            table_con_remove.iloc[fill_counter,:] = [spacing]*2
+            table_con_remove.iloc[fill_counter+1,:] = ' '
+            table_con_remove.iloc[fill_counter+2,:] = [original_optimal_solution[0], optimal_excl_soft[int(fill_counter/4)]]
+
+            infeasible_counter = 0
+
+            for infeasible_counter in range(2):
+                if table_con_remove.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
+                    table_con_remove.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
+                else:
+                    table_con_remove.iloc[fill_counter+3,0] = None
+                    table_con_remove.iloc[fill_counter+3,1] = table_con_remove.iloc[fill_counter+2,1] - table_con_remove.iloc[fill_counter+2,0]
+
+
+    return table_con_remove
+
+
     
 # Sensitivity Analysis function to run different sets of sensitivity analysis based on various situations
 # And output explanations
 
 def Sensitivity_Analysis():
+    
     
 
     
