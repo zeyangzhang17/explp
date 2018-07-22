@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 13th July 2018
+# Last Updated: 22nd July 2018
 
 
 
@@ -28,7 +28,7 @@ from explp import solve
     
 def Optimal_Var():
     
-    optimal_solution = optimal_solution_Simplex.copy()
+    optimal_solution = optimal_solution_Simplex[:]
     
     optimal_objective_value = optimal_solution[0]
     optimal_variable_value = optimal_solution[1]
@@ -137,14 +137,13 @@ def Optimal_Var():
     
 # objective coefficient sensitivity analysis function
 
-# Non-completed: Bugs in obj_coef & original_obj_coef
 # Potential further improvement: percentage changes
 
 def Obj_Coef():
     
-    original_obj_coef = obj_coef.copy()
+    original_obj_coef = obj_coef[:]
     
-    original_optimal_solution = optimal_solution_Simplex.copy()
+    original_optimal_solution = optimal_solution_Simplex[:]
     
     new_optimal_minus = []
     new_optimal_plus = []
@@ -205,8 +204,8 @@ def Obj_Coef():
         infeasible_counter = 0
         
         for negative_counter in range(3):
-            if table_var_changes.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
-                table_var_changes.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
+            if table_obj_coef.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
+                table_obj_coef.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
     
     
     return table_obj_coef
@@ -215,9 +214,88 @@ def Obj_Coef():
     
 # constraint bound sensitivity analysis function
 
-def Con_Bound():
+# mostly similar to objective coefficient sensitivity analysis function
 
+def Con_Bound(): 
     
+    original_con_bound = bound[:]
+    
+    original_optimal_solution = optimal_solution_Simplex[:]
+    
+    new_optimal_minus = []
+    new_optimal_plus = []
+    
+    bound_counter = 0
+    
+    for bound_counter in range(len(constraint_names)):
+        
+        bound = original_con_bound
+        
+        bound[bound_counter] -= 1
+        obj_minus = Simplex()   
+        
+        
+        if NoFeasibleSolution == True:
+            new_optimal_minus.append('INFESIBLE')
+        else:
+            new_optimal_minus.append(obj_minus[1][0])
+        
+        bound = original_con_bound
+        bound[bound_counter] += 1
+        obj_plus = Simplex()
+        
+        if NoFeasibleSolution == True:
+            new_optimal_plus.append('INFESIBLE')
+        else:
+            new_optimal_plus.append(obj_plus[1][0])
+        
+        bound_counter += 1
+    
+    spacing = '...'
+    
+    col_bound = ['Bound Value - 1', 'Bound Value', 'Bound Value + 1']
+    row_bound = []
+    
+    row_counter = 0
+    
+    for row_counter in range(len(constraint_names)):
+        row_bound.append(spacing)
+        row_bound.append('Bound of ' + constraint_names[row_counter])
+        row_bound.append('Value of ' + obj_names[0])
+        row_bound.append('Changes in Objective Values')
+        row_counter += 1
+        
+    row_bound.append(spacing)
+    
+    table_bound = pd.DataFrame(columns = col_bound, index = row_bound).fillna('')
+    
+    fill_counter = 0
+    
+    for fill_counter in range(0,4*(len(constraint_names)-1)+1,4):
+    
+        table_bound.iloc[fill_counter,:] = [spacing]*3
+        table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]+1] 
+        table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)]]
+        table_bound.iloc[fill_counter+3,0] = table_bound.iloc[fill_counter+2,0] - table_bound.iloc[fill_counter+2,1]
+        table_bound.iloc[fill_counter+3,1] = 0
+        table_bound.iloc[fill_counter+3,2] = table_bound.iloc[fill_counter+2,2] - table_bound.iloc[fill_counter+2,1]
+        
+        infeasible_counter = 0
+        
+        for negative_counter in range(3):
+            if table_bound.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
+                table_bound.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
+        
+        # constraint bound less than 0 is not making sense
+        
+        if table_bound.iloc[fill_counter+1,0] < 0:
+            table_bound.iloc[fill_counter+2,0] = 'INFESIBLE'
+            table_bound.iloc[fill_counter+3,0] = 'INFESIBLE'
+            
+    
+    
+    return table_bound
+
     
     
     
