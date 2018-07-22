@@ -13,7 +13,8 @@
 
 # Further Improvement:
     # 1. add explanations in sensitivity analysis function
-    # 2. bugs in con_remove, probably also due to shallow and deep copy
+    # 2. add percentage changes in the first two functions
+    # 3. bugs in con_remove, probably also due to shallow and deep copy
 
 
 
@@ -29,6 +30,7 @@ from explp import solve
 
 # Aim to explain why the optimal solution is the best
 # By changing optimal solution up and down 1 unit to see how the objective changes and whether constraints are violated
+    
     
 def Optimal_Var():
     
@@ -221,6 +223,7 @@ def Obj_Coef():
 
 # mostly similar to objective coefficient sensitivity analysis function
 
+
 def Con_Bound(): 
     
     original_con_bound = bound[:]
@@ -230,20 +233,32 @@ def Con_Bound():
     new_optimal_minus = []
     new_optimal_plus = []
     
+    new_optimal_m100 = []
+    new_optimal_m50 = []
+    new_optimal_m25 = []
+    new_optimal_m10 = []
+    
+    new_optimal_p10 = []
+    new_optimal_p25 = []
+    new_optimal_p50 = []
+    new_optimal_p100 = []
+    
     bound_counter = 0
     
     for bound_counter in range(len(constraint_names)):
         
-        bound = original_con_bound
+        #
         
+        bound = original_con_bound
         bound[bound_counter] -= 1
         obj_minus = Simplex()   
-        
         
         if NoFeasibleSolution == True:
             new_optimal_minus.append('INFESIBLE')
         else:
             new_optimal_minus.append(obj_minus[1][0])
+        
+        #
         
         bound = original_con_bound
         bound[bound_counter] += 1
@@ -254,11 +269,101 @@ def Con_Bound():
         else:
             new_optimal_plus.append(obj_plus[1][0])
         
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = 0
+        obj_m100 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_m100.append('INFESIBLE')
+        else:
+            new_optimal_m100.append(obj_m100[1][0])
+        
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*0.5
+        obj_m50 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_m50.append('INFESIBLE')
+        else:
+            new_optimal_m50.append(obj_m50[1][0])
+
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*0.75
+        obj_m25 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_m25.append('INFESIBLE')
+        else:
+            new_optimal_m25.append(obj_m25[1][0])    
+            
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*0.9
+        obj_m10 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_m10.append('INFESIBLE')
+        else:
+            new_optimal_m10.append(obj_m10[1][0])
+            
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*1.1
+        obj_p10 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_p10.append('INFESIBLE')
+        else:
+            new_optimal_p10.append(obj_p10[1][0])
+        
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*1.25
+        obj_p25 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_p25.append('INFESIBLE')
+        else:
+            new_optimal_p25.append(obj_p25[1][0])
+
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*1.5
+        obj_p50 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_p50.append('INFESIBLE')
+        else:
+            new_optimal_p50.append(obj_p50[1][0])
+            
+        #
+        
+        bound = original_con_bound
+        bound[bound_counter] = bound[bound_counter]*2
+        obj_p100 = Simplex()   
+        
+        if NoFeasibleSolution == True:
+            new_optimal_p100.append('INFESIBLE')
+        else:
+            new_optimal_p100.append(obj_p100[1][0])   
+               
+        #
+        
         bound_counter += 1
     
     spacing = '...'
     
-    col_bound = ['Bound Value - 1', 'Bound Value', 'Bound Value + 1']
+    col_bound = ['Bound Value - 1', 'Bound Value', 'Bound Value + 1', spacing, 'Bound Value - 100%', 'Bound Value - 50%', 'Bound Value - 25%', 'Bound Value - 10%', 'Bound Value', 'Bound Value + 10%', 'Bound Value + 25%', 'Bound Value + 50%', 'Bound Value + 100%']
     row_bound = []
     
     row_counter = 0
@@ -278,19 +383,27 @@ def Con_Bound():
     
     for fill_counter in range(0,4*(len(constraint_names)-1)+1,4):
     
-        table_bound.iloc[fill_counter,:] = [spacing]*3
-        table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]+1] 
-        table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)]]
+        table_bound.iloc[fill_counter,:] = [spacing]*13
+        table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]+1, spacing, 0, original_con_bound[int(fill_counter/4)]*0.5, original_con_bound[int(fill_counter/4)]*0.75, original_con_bound[int(fill_counter/4)]*0.9, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]*1.1, original_con_bound[int(fill_counter/4)]*1.25, original_con_bound[int(fill_counter/4)]*1.5, original_con_bound[int(fill_counter/4)]*2]
+        table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)], spacing, new_optimal_m100[int(fill_counter/4)], new_optimal_m50[int(fill_counter/4)], new_optimal_m25[int(fill_counter/4)], new_optimal_m10[int(fill_counter/4)], original_optimal_solution[0], new_optimal_p10[int(fill_counter/4)], new_optimal_p25[int(fill_counter/4)], new_optimal_p50[int(fill_counter/4)], new_optimal_p100[int(fill_counter/4)]]
         
         infeasible_counter = 0
         
-        for infeasible_counter in range(3):
+        for infeasible_counter in range(13):
             if table_bound.iloc[fill_counter+2,infeasible_counter] == 'INFESIBLE':
-                table_bound.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'
+                table_bound.iloc[fill_counter+3,infeasible_counter] = 'INFESIBLE'                                     
+                                              
             else:
                 table_bound.iloc[fill_counter+3,0] = table_bound.iloc[fill_counter+2,0] - table_bound.iloc[fill_counter+2,1]
                 table_bound.iloc[fill_counter+3,1] = None
                 table_bound.iloc[fill_counter+3,2] = table_bound.iloc[fill_counter+2,2] - table_bound.iloc[fill_counter+2,1]
+                table_bound.iloc[fill_counter+3,3] = spacing
+                                              
+                for perc_fill_counter in range(4,13):
+                    table_bound.iloc[fill_counter+3,perc_fill_counter] = table_bound.iloc[fill_counter+2,perc_fill_counter] - table_bound.iloc[fill_counter+2,1]
+                    perc_fill_counter += 1
+                                              
+                table_bound.iloc[fill_counter+3,8] = None
 
         # constraint bound less than 0 is not making sense
         
@@ -301,7 +414,6 @@ def Con_Bound():
                 
     
     return table_bound
-
     
     
     
@@ -393,8 +505,8 @@ def Con_Remove():
 
 
     return table_con_remove
-
-
+    
+    
     
 # Sensitivity Analysis function to run different sets of sensitivity analysis based on various situations
 # And output explanations
