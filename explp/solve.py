@@ -564,6 +564,15 @@ def Solve():
             tableau = Simplex_Solution[0]
             optimal_solution_Simplex = Simplex_Solution[1]
             NoFeasibleSolution = False
+            
+            output_counter = 0
+            
+            print('\nThe optimal solution is found for ' + str(obj_names[0]) + ' !\n')
+            print('The optimal value for the objective ' + str(obj_names[0]) + ' is ' + str(optimal_solution_Simplex[0]) + ' ;\n\nWhen: \n')
+            
+            for output_counter in range(len(variable_names)):
+                print(str(variable_names[output_counter]) + ' is set to ' + str(optimal_solution_Simplex[1][output_counter]) + '\n')
+                output_counter += 1
         
     else:
         BB_Solution = Branch_And_Bound()
