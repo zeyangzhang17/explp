@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 20th July 2018
+# Last Updated: 27th July 2018
 
 # Non-completed Parts:
 
@@ -16,11 +16,12 @@
     
 # 2. Branch and Bound Algorithm:
     # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
-    # There are still something wrong with b&b algorithm, yielding wrong answer in some cases
+
 
 import math
 import pandas as pd
 import numpy as np
+import copy
 
 
 def Simplex():
@@ -259,9 +260,11 @@ def Branch_And_Bound():
         floor_bnb = np.floor(bnb_var)
         ceil_bnb = np.ceil(bnb_var)
         
-        # Branch 1: Floor
+        pivoting_floor = copy.deepcopy(tableau)
+        pivoting_ceiling = copy.deepcopy(tableau)
         
-        pivoting_floor = tableau.copy()
+        
+        # Branch 1: Floor
                 
         # take the targetted non-integer variable out of objectives and constraints
         
@@ -365,8 +368,7 @@ def Branch_And_Bound():
 
         # Same for the ceiling
         # Branch 2: Ceiling
-        
-        pivoting_ceiling = tableau.copy()
+       
                 
         pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceiling_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
