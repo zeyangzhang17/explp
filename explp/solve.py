@@ -104,7 +104,7 @@ def Simplex():
         
         # find the most negative value
         
-        if times_counter <= len(con_count):
+        if times_counter <= con_count:
             pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
             
         # if cycling, use Bland's rule to find the first negative value
@@ -142,8 +142,11 @@ def Simplex():
         
         if all(ratio <= 0 for ratio in test_ratios) == True:
             NoFeasibleSolution = True
+            UnBounded = True
             print('Error! The Problem is UN-BOUNDED !')
-            break                
+            break
+        else:
+            UnBounded = False
         
         pivot_row = test_ratios.index(min([ratio for ratio in test_ratios if ratio > 0]))+1
         pivot_row_record.append(pivot_row)
@@ -190,7 +193,15 @@ def Simplex():
     optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
     
     if NoFeasibleSolution == True:
+        
         print('\nThere is NO Feasible Solutions!\n')
+        
+        if UnBounded == True:
+            print('There is a high probability that constraints are unbounded!\n')
+            print('Please check for the constraints.\n')
+        else:
+            print('There is a high probability that constraints are contradicting with each other!\n')
+            print('Please check for the constraints.\n')
         return NoFeasibleSolution
     else:
         return tableau, optimal_solution_Simplex
@@ -286,7 +297,7 @@ def Branch_And_Bound():
         while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
             times_counter += 1
         
-            if times_counter <= len(con_count):
+            if times_counter <= con_count:
                 pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
 
             else:
@@ -386,7 +397,7 @@ def Branch_And_Bound():
         while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
             times_counter += 1
         
-            if times_counter <= len(con_count):
+            if times_counter <= con_count:
                 pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
 
             else:
@@ -543,9 +554,20 @@ def Solve():
     try:
         Integer_Variable_Name
     except NameError:
-        return Simplex()
+        Simplex_Solution = Simplex()
+        
+        try:
+            len(Simplex_Solution[0])
+        except TypeError:
+            NoFeasibleSolution = True
+        else:
+            tableau = Simplex_Solution[0]
+            optimal_solution_Simplex = Simplex_Solution[1]
+            NoFeasibleSolution = False
+        
     else:
-        return Branch_And_Bound()
+        BB_Solution = Branch_And_Bound()
+        optimal_solution_Branch_and_Bound = BB_Solution[0]
 
     
 Solve()
