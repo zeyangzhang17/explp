@@ -10,11 +10,8 @@
 # Last Updated: 27th July 2018
 
 # Non-completed Parts:
-
-# 1. Simplex Algorithm:    
-    # Explanations of Infeasible Solution caused by contradicting constraints
     
-# 2. Branch and Bound Algorithm:
+# 1. Branch and Bound Algorithm:
     # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
 
 
