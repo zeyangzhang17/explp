@@ -9,18 +9,17 @@
 
     
     
-# Last Updated: 26th July 2018
+# Last Updated: 27th July 2018
 
 # Further Improvement:
     # 1. add explanations in sensitivity analysis function
-    # 2. add percentage changes in the first two functions
-    # 3. bugs in con_remove, probably also due to shallow and deep copy
 
 
 
 import numpy as np
 import pandas as pd
 import matplotlib as plt
+import copy
 from explp import solve
 
 
@@ -30,9 +29,9 @@ from explp import solve
 # By changing optimal solution up and down 1 unit and -100% to +100%, in order to see how the objective changes and whether constraints are violated
     
     
-def Optimal_Var():
+def Optimal_Var(optimal_solution_Simplex):
     
-    optimal_solution = optimal_solution_Simplex[:]
+    optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
     optimal_objective_value = optimal_solution[0]
     optimal_variable_value = optimal_solution[1]
@@ -238,11 +237,11 @@ def Optimal_Var():
 # Still the same bug
 
 
-def Obj_Coef():
+def Obj_Coef(obj_coef, optimal_solution_Simplex):
     
-    original_obj_coef = obj_coef[:]
+    original_obj_coef = copy.deepcopy(obj_coef[:])
     
-    original_optimal_solution = optimal_solution_Simplex[:]
+    original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
     new_optimal_minus = []
     new_optimal_plus = []
@@ -263,7 +262,7 @@ def Obj_Coef():
         
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] -= 1
         obj_minus = Simplex()
         
@@ -274,7 +273,7 @@ def Obj_Coef():
             
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] += 1
         obj_plus = Simplex()
         
@@ -285,7 +284,7 @@ def Obj_Coef():
         
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = 0
         obj_m100 = Simplex()   
         
@@ -296,7 +295,7 @@ def Obj_Coef():
         
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.5
         obj_m50 = Simplex()   
         
@@ -307,7 +306,7 @@ def Obj_Coef():
 
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.75
         obj_m25 = Simplex()   
         
@@ -318,7 +317,7 @@ def Obj_Coef():
             
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.9
         obj_m10 = Simplex()   
         
@@ -329,7 +328,7 @@ def Obj_Coef():
             
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.1
         obj_p10 = Simplex()   
         
@@ -340,7 +339,7 @@ def Obj_Coef():
         
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.25
         obj_p25 = Simplex()   
         
@@ -351,7 +350,7 @@ def Obj_Coef():
 
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.5
         obj_p50 = Simplex()   
         
@@ -362,7 +361,7 @@ def Obj_Coef():
             
         #
         
-        obj_coef = original_obj_coef
+        obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*2
         obj_p100 = Simplex()   
         
@@ -428,11 +427,11 @@ def Obj_Coef():
 # mostly similar to objective coefficient sensitivity analysis function
 
 
-def Con_Bound(): 
+def Con_Bound(bound, optimal_solution_Simplex): 
     
-    original_con_bound = bound[:]
+    original_con_bound = copy.deepcopy(bound[:])
     
-    original_optimal_solution = optimal_solution_Simplex[:]
+    original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
     new_optimal_minus = []
     new_optimal_plus = []
@@ -453,7 +452,7 @@ def Con_Bound():
         
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] -= 1
         bound_minus = Simplex()   
         
@@ -464,7 +463,7 @@ def Con_Bound():
         
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] += 1
         bound_plus = Simplex()
         
@@ -475,7 +474,7 @@ def Con_Bound():
         
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = 0
         bound_m100 = Simplex()   
         
@@ -486,7 +485,7 @@ def Con_Bound():
         
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.5
         bound_m50 = Simplex()   
         
@@ -497,7 +496,7 @@ def Con_Bound():
 
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.75
         bound_m25 = Simplex()   
         
@@ -508,7 +507,7 @@ def Con_Bound():
             
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.9
         bound_m10 = Simplex()   
         
@@ -519,7 +518,7 @@ def Con_Bound():
             
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.1
         bound_p10 = Simplex()   
         
@@ -530,7 +529,7 @@ def Con_Bound():
         
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.25
         bound_p25 = Simplex()   
         
@@ -541,7 +540,7 @@ def Con_Bound():
 
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.5
         bound_p50 = Simplex()   
         
@@ -552,7 +551,7 @@ def Con_Bound():
             
         #
         
-        bound = original_con_bound
+        bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*2
         bound_p100 = Simplex()   
         
@@ -623,13 +622,13 @@ def Con_Bound():
     
 # constraint remove sensitivity analysis function
 
-def Con_Remove():
+def Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex):
     
-    original_optimal_solution = optimal_solution_Simplex[:]
+    original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
-    original_constraint_names = constraint_names[:]
-    original_constraint = constraint[:]
-    original_bound = bound[:]
+    original_constraint_names = copy.deepcopy(constraint_names[:])
+    original_constraint = copy.deepcopy(constraint[:])
+    original_bound = copy.deepcopy(bound[:])
     
     soft_con_index = []
     
@@ -657,9 +656,9 @@ def Con_Remove():
         
         for soft_con_remove_counter in soft_con_index:
             
-            constraint_names = original_constraint_names
-            constraint = original_constraint
-            bound = original_bound
+            constraint_names = copy.deepcopy(original_constraint_names)
+            constraint = copy.deepcopy(original_constraint)
+            bound = copy.deepcopy(original_bound)
             
             del constraint_names[soft_con_remove_counter]
             del constraint[soft_con_remove_counter]
