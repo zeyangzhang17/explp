@@ -12,8 +12,10 @@
 # Last Updated: 27th July 2018
 
 # Further Improvement:
+    # 0. Sensitivity_Analysis function not yet finished
     # 1. add explanations in sensitivity analysis function
-
+    # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
+   
 
 
 import numpy as np
@@ -23,11 +25,24 @@ import copy
 from explp import solve
 
 
+# Firstly to record Optimal Solution
+
+Simplex_Solution = Simplex()
+
+try:
+    len(Simplex_Solution[0])
+except TypeError:
+    NoFeasibleSolution = True
+else:
+    tableau = Simplex_Solution[0]
+    optimal_solution_Simplex = Simplex_Solution[1]
+    NoFeasibleSolution = False
+    
+    
 # optimal varible sensitivity analysis function
 
 # Aim to explain why the optimal solution is the best
 # By changing optimal solution up and down 1 unit and -100% to +100%, in order to see how the objective changes and whether constraints are violated
-    
     
 def Optimal_Var(optimal_solution_Simplex):
     
@@ -716,8 +731,39 @@ def Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex):
 
 def Sensitivity_Analysis():
     
+    # print sensitivity analysis in a frame
     
-
+    def print_frame(*words):
+        
+        size = max(len(word) for word in words)
+        print('\033[1m' + '=' * (size + 6))
+        
+        for word in words:
+            print('\033[1m' + '== {w:<{s}} =='.format(w=word, s=size))
+            
+        print('\033[1m' + '=' * (size + 6))
+    
+    print_frame("Sensitivity", "Analysis", "for: ", obj_names[0])
+    
+    
+    # then run all the function to change parameters, from which explanations are extracted
+    
+    Optimal_Var(optimal_solution_Simplex)
+    
+    # return table_var_changes
+    
+    Obj_Coef(obj_coef, optimal_solution_Simplex)
+    
+    # return table_obj_coef
+    
+    Con_Bound(bound, optimal_solution_Simplex)
+    
+    # return table_bound
+    
+    Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex)
+    
+    # return table_con_remove
+    
     
     
 Sensitivity_Analysis()
