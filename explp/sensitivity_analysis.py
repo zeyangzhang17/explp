@@ -17,6 +17,7 @@
 
 
 
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -748,9 +749,7 @@ def Sensitivity_Analysis():
     # then run all the function to change parameters, from which explanations are extracted
     
     SA_Opt_Var = Optimal_Var(optimal_solution_Simplex)
-    SA_Opt_Var
-        
-    # return table_var_changes
+    print(SA_Opt_Var)
     
     print('\nThe table above shows that the best value for ' + str(obj_names[0]) + ' is ' + str(SA_Opt_Var.iloc[2,1]) + ', under the optimal solution, ')
     print('when the ' + str(len(variable_names)) + ' variables: ' + str(variable_names[:]) + ' , are set to: ')
@@ -765,6 +764,8 @@ def Sensitivity_Analysis():
     print('The following graphs have shown the impacts on the objective value by changing the optimal vaiables value: \n')
     print('(Notes: Blue points are feasible, while Red points are violating at least one constraints)\n')
     
+    # plot the objective value against changes in each variable
+    
     plot_counter = 0
     
     for plot_counter in range(len(variable_names)):
@@ -773,30 +774,36 @@ def Sensitivity_Analysis():
         y_b = []
         x_r = []
         y_r = []
-        number_checklist = [int, float]
         
         color_counter = 0
         var_values_counter = 0
         
-        for var_values_counter in range(len(variable_names)):
-            for color_counter in range(SA_Opt_Var.shape[1]):
-                if type(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter]) in number_checklist and type(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter]) in number_checklist: 
-                    if SA_Opt_Var.iloc[var_values_counter*4 + 3, color_counter] == None:
-                        x_b.append(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter])
-                        y_b.append(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter])
+        # check if constraints are violated, if yes plot red, otherwise plot blue
+        
+        for color_counter in range(SA_Opt_Var.shape[1]):
+            if isinstance(SA_Opt_Var.iloc[plot_counter*4 + 1, color_counter], int) == True or isinstance(SA_Opt_Var.iloc[plot_counter*4 + 1, color_counter], float) == True:
+                if isinstance(SA_Opt_Var.iloc[plot_counter*4 + 2, color_counter], int) == True or isinstance(SA_Opt_Var.iloc[plot_counter*4 + 2, color_counter], float) == True:
+                    if SA_Opt_Var.iloc[plot_counter*4 + 3, color_counter] == None:
+                        x_b.append(SA_Opt_Var.iloc[plot_counter*4 + 1, color_counter])
+                        y_b.append(SA_Opt_Var.iloc[plot_counter*4 + 2, color_counter])
                     else:
-                        x_r.append(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter])
-                        y_r.append(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter])
+                        x_r.append(SA_Opt_Var.iloc[plot_counter*4 + 1, color_counter])
+                        y_r.append(SA_Opt_Var.iloc[plot_counter*4 + 2, color_counter])
 
-                color_counter += 1  
-            var_values_counter += 1
+            color_counter += 1  
+
             
         plt.plot(x_b, y_b, 'bo')
         plt.plot(x_r, y_r, 'ro')
+
         plt.title('Objective Value Changes in Different ' + str(variable_names[plot_counter]))
         plt.xlabel('Value of ' + str(variable_names[plot_counter]))
         plt.ylabel('Objective Value of ' + str(obj_names[0]))
         plt.show()
+        
+        plt.clf()
+        plt.cla()
+        plt.close()
         
         plot_counter += 1
     
