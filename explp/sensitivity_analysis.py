@@ -9,18 +9,17 @@
 
     
     
-# Last Updated: 27th July 2018
+# Last Updated: 30th July 2018
 
 # Further Improvement:
-    # 0. Sensitivity_Analysis function not yet finished
-    # 1. add explanations in sensitivity analysis function
+    # 1. add explanations and plots in sensitivity analysis function for the remaining three functions
     # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
-   
+
 
 
 import numpy as np
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import copy
 from explp import solve
 
@@ -748,21 +747,86 @@ def Sensitivity_Analysis():
     
     # then run all the function to change parameters, from which explanations are extracted
     
-    Optimal_Var(optimal_solution_Simplex)
-    
+    SA_Opt_Var = Optimal_Var(optimal_solution_Simplex)
+    SA_Opt_Var
+        
     # return table_var_changes
     
-    Obj_Coef(obj_coef, optimal_solution_Simplex)
+    print('\nThe table above shows that the best value for ' + str(obj_names[0]) + ' is ' + str(SA_Opt_Var.iloc[2,1]) + ', under the optimal solution, ')
+    print('when the ' + str(len(variable_names)) + ' variables: ' + str(variable_names[:]) + ' , are set to: ')
+    
+    var_values_counter = 0
+    for var_values_counter in range(len(variable_names)):
+        print(str(variable_names[var_values_counter]) + ' = ' + str(SA_Opt_Var.iloc[var_values_counter*4 + 1, 1]) + ' , ')
+        var_values_counter += 1
+    print('respectively.\n')
+    
+    print('If variables are set to other values, the objective value ' + str(obj_names[0]) + ' will be either inferior than ' + str(SA_Opt_Var.iloc[2,1]) + ' , or violating constraints! \n')
+    print('The following graphs have shown the impacts on the objective value by changing the optimal vaiables value: \n')
+    print('(Notes: Blue points are feasible, while Red points are violating at least one constraints)\n')
+    
+    plot_counter = 0
+    
+    for plot_counter in range(len(variable_names)):
+         
+        x_b = []
+        y_b = []
+        x_r = []
+        y_r = []
+        number_checklist = [int, float]
+        
+        color_counter = 0
+        var_values_counter = 0
+        
+        for var_values_counter in range(len(variable_names)):
+            for color_counter in range(SA_Opt_Var.shape[1]):
+                if type(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter]) in number_checklist and type(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter]) in number_checklist: 
+                    if SA_Opt_Var.iloc[var_values_counter*4 + 3, color_counter] == None:
+                        x_b.append(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter])
+                        y_b.append(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter])
+                    else:
+                        x_r.append(SA_Opt_Var.iloc[var_values_counter*4 + 1, color_counter])
+                        y_r.append(SA_Opt_Var.iloc[var_values_counter*4 + 2, color_counter])
+
+                color_counter += 1  
+            var_values_counter += 1
+            
+        plt.plot(x_b, y_b, 'bo')
+        plt.plot(x_r, y_r, 'ro')
+        plt.title('Objective Value Changes in Different ' + str(variable_names[plot_counter]))
+        plt.xlabel('Value of ' + str(variable_names[plot_counter]))
+        plt.ylabel('Objective Value of ' + str(obj_names[0]))
+        plt.show()
+        
+        plot_counter += 1
+    
+
+    
+    
+    
+    SA_Obj_Coe = Obj_Coef(obj_coef, optimal_solution_Simplex)
+    SA_Obj_Coe
     
     # return table_obj_coef
     
-    Con_Bound(bound, optimal_solution_Simplex)
+    
+    
+    
+    SA_Con_Bou = Con_Bound(bound, optimal_solution_Simplex)
+    SA_Con_Bou
     
     # return table_bound
     
-    Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex)
+    
+    
+    
+    
+    SA_Con_Rem = Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex)
+    SA_Con_Rem
     
     # return table_con_remove
+    
+    
     
     
     
