@@ -9,10 +9,10 @@
 
     
     
-# Last Updated: 30th July 2018
+# Last Updated: 31st July 2018
 
 # Further Improvement:
-    # 1. add explanations and plots in sensitivity analysis function for the remaining three functions
+    # 1. add explanations and plots in sensitivity analysis function for the remaining two functions
     # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
 
 
@@ -637,7 +637,7 @@ def Con_Bound(bound, optimal_solution_Simplex):
     
 # constraint remove sensitivity analysis function
 
-def Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex):
+def Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_solution_Simplex):
     
     original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
@@ -791,7 +791,6 @@ def Sensitivity_Analysis():
                         y_r.append(SA_Opt_Var.iloc[plot_counter*4 + 2, color_counter])
 
             color_counter += 1  
-
             
         plt.plot(x_b, y_b, 'bo')
         plt.plot(x_r, y_r, 'ro')
@@ -807,34 +806,56 @@ def Sensitivity_Analysis():
         
         plot_counter += 1
     
-
+    print('\n==================================================\n')
     
     
+    # change coefficients in objective function   
     
     SA_Obj_Coe = Obj_Coef(obj_coef, optimal_solution_Simplex)
-    SA_Obj_Coe
+    print(SA_Obj_Coe)
     
     # return table_obj_coef
     
-    
+    print('\n==================================================\n')
     
     
     SA_Con_Bou = Con_Bound(bound, optimal_solution_Simplex)
-    SA_Con_Bou
+    print(SA_Con_Bou)
     
     # return table_bound
     
+    print('\n==================================================\n')
     
     
+    SA_Con_Rem = Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_solution_Simplex)
+    
+    # return table_con_remove, None if there is no soft constraints
+    
+    try:
+        shape_checker = SA_Con_Rem.shape[0]
+        print(SA_Con_Rem)
+        
+        soft_cons_index = [ind for ind, soft in enumerate(constraint_type) if soft == 'soft']
+        soft_cons = [constraint_names[name_ind] for name_ind in soft_cons_index]
+        print('\nThe table above shows the changes in the value of objective ' + str(obj_names[0]) + ' , if soft constraints ' + str(soft_cons_index) + ' are removed.\n')
+        
+        exp_counter = 0
+        
+        for exp_counter in range(len(soft_cons_index)):
+            if SA_Con_Rem.iloc[exp_counter*4 + 2, 1] == 'INFEASIBLE':
+                print('If soft constraint ' + str(soft_cons[exp_counter]) + ' is removed, the objective value ' + str(obj_names[0]) + ' will become infeasible.\n')
+            elif SA_Con_Rem.iloc[exp_counter*4 + 3, 1] == 0:
+                print('If soft constraint ' + str(soft_cons[exp_counter]) + ' is removed, the objective value ' + str(obj_names[0]) + ' is unchanged.\n')
+            else:
+                print('If soft constraint ' + str(soft_cons[exp_counter]) + ' is removed, the objective value ' + str(obj_names[0]) + ' is changed to ' + str(SA_Con_Rem.iloc[exp_counter*4 + 2, 1]) + ' .\n')
+        
+    except AttributeError:
+        print('There are no soft constraints to be removed.')
     
     
-    SA_Con_Rem = Con_Remove(constraint_names, constraint, bound, optimal_solution_Simplex)
-    SA_Con_Rem
-    
-    # return table_con_remove
-    
-    
-    
+    print('\n==================================================\n')
+    print('The End of Sensitivity Analysis.')
+    print('\n==================================================\n')    
     
     
 Sensitivity_Analysis()
