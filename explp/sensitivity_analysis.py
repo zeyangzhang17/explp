@@ -12,9 +12,8 @@
 # Last Updated: 31st July 2018
 
 # Further Improvement:
-    # 1. add explanations and plots in sensitivity analysis function for the remaining two functions
+    # 1. add functionality that computing how much can be changed before optimal solution changes
     # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
-
 
 
 
@@ -776,7 +775,6 @@ def Sensitivity_Analysis():
         y_r = []
         
         color_counter = 0
-        var_values_counter = 0
         
         # check if constraints are violated, if yes plot red, otherwise plot blue
         
@@ -816,6 +814,52 @@ def Sensitivity_Analysis():
     
     # return table_obj_coef
     
+    print('\nThe table above shows that the best value for ' + str(obj_names[0]) + ' is ' + str(SA_Obj_Coe.iloc[2,1]) + ', under the optimal solution, ')
+    print('when the coefficients of ' + str(len(variable_names)) + ' variables: ' + str(variable_names[:]) + ' , are set to: ')
+    
+    obj_coe_counter = 0
+    row_name_list = list(SA_Obj_Coe.index)
+    for obj_coe_counter in range(len(variable_names)):
+        print(str(row_name_list[obj_coe_counter*4 + 1]) + ' = ' + str(SA_Obj_Coe.iloc[obj_coe_counter*4 + 1, 1]) + ' , ')
+        obj_coe_counter += 1
+    print('respectively.\n')
+    
+    print('If coefficients are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Obj_Coe.iloc[2,1]) + ' .\n')
+    print('The following graphs have shown the impacts on the objective value by changing the coefficient of each variable: \n')
+    
+    # plot the objective value against changes in each variable
+    
+    plot_counter = 0
+    
+    for plot_counter in range(len(variable_names)):
+         
+        x_k = []
+        y_k = []
+        
+        col_counter = 0
+        
+        for col_counter in range(SA_Obj_Coe.shape[1]):
+            if isinstance(SA_Obj_Coe.iloc[plot_counter*4 + 1, col_counter], int) == True or isinstance(SA_Obj_Coe.iloc[plot_counter*4 + 1, col_counter], float) == True:
+                if isinstance(SA_Obj_Coe.iloc[plot_counter*4 + 2, col_counter], int) == True or isinstance(SA_Obj_Coe.iloc[plot_counter*4 + 2, col_counter], float) == True:
+                    x_k.append(SA_Obj_Coe.iloc[plot_counter*4 + 1, col_counter])
+                    y_k.append(SA_Obj_Coe.iloc[plot_counter*4 + 2, col_counter])
+
+            color_counter += 1  
+            
+        plt.plot(x_k, y_k, 'ko')
+
+        plt.title('Objective Value Changes in Different Coefficients of ' + str(variable_names[plot_counter]))
+        plt.xlabel('Coefficient of ' + str(variable_names[plot_counter]))
+        plt.ylabel('Objective Value of ' + str(obj_names[0]))
+        plt.show()
+        
+        plt.clf()
+        plt.cla()
+        plt.close()
+        
+        plot_counter += 1
+    
+    
     print('\n==================================================\n')
     
     
@@ -823,6 +867,7 @@ def Sensitivity_Analysis():
     print(SA_Con_Bou)
     
     # return table_bound
+    
     
     print('\n==================================================\n')
     
