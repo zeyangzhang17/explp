@@ -949,12 +949,10 @@ def Sensitivity_Analysis():
                 print('If soft constraint ' + str(soft_cons[exp_counter]) + ' is removed, the objective value ' + str(obj_names[0]) + ' is changed to ' + str(SA_Con_Rem.iloc[exp_counter*4 + 2, 1]) + ' .\n')
         
     except AttributeError:
-        print('There are no soft constraints to be removed.')
+        print('There are no soft constraints to be removed.\n')
     
     
-    print('\n==================================================\n')
-    print('The End of Sensitivity Analysis.')
-    print('\n==================================================\n')    
+    print_frame("The", "End", "of", "Sensitivity", "Analysis")    
     
     
 Sensitivity_Analysis()
