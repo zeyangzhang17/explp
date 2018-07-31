@@ -11,9 +11,11 @@
     
 # Last Updated: 31st July 2018
 
-# Further Improvement:
+# Possible Further Improvement:
     # 1. add functionality that computing how much can be changed before optimal solution changes
-    # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
+    # 2. maybe limit the bound changes only to soft constraints
+    # 3. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
+    # 4. add graphs for feasible region and objective function
 
 
 
@@ -441,7 +443,7 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
 # mostly similar to objective coefficient sensitivity analysis function
 
 
-def Con_Bound(bound, optimal_solution_Simplex): 
+def Con_Bound(bound, constraint_names, optimal_solution_Simplex): 
     
     original_con_bound = copy.deepcopy(bound[:])
     
@@ -747,6 +749,8 @@ def Sensitivity_Analysis():
     
     # then run all the function to change parameters, from which explanations are extracted
     
+    # change optimal solution for each variable
+    
     SA_Opt_Var = Optimal_Var(optimal_solution_Simplex)
     print(SA_Opt_Var)
     
@@ -804,6 +808,7 @@ def Sensitivity_Analysis():
         
         plot_counter += 1
     
+    
     print('\n==================================================\n')
     
     
@@ -824,10 +829,10 @@ def Sensitivity_Analysis():
         obj_coe_counter += 1
     print('respectively.\n')
     
-    print('If coefficients are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Obj_Coe.iloc[2,1]) + ' .\n')
+    print('If coefficients are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Obj_Coe.iloc[2,1]) + ' , or even infeasible.\n')
     print('The following graphs have shown the impacts on the objective value by changing the coefficient of each variable: \n')
     
-    # plot the objective value against changes in each variable
+    # plot the objective value against changes in the coefficient of each variable
     
     plot_counter = 0
     
@@ -863,14 +868,63 @@ def Sensitivity_Analysis():
     print('\n==================================================\n')
     
     
-    SA_Con_Bou = Con_Bound(bound, optimal_solution_Simplex)
+    # change bound value of each constraint
+    
+    SA_Con_Bou = Con_Bound(bound, constraint_names, optimal_solution_Simplex)
     print(SA_Con_Bou)
     
     # return table_bound
     
+    print('\nThe table above shows that the best value for ' + str(obj_names[0]) + ' is ' + str(SA_Con_Bou.iloc[2,1]) + ', under the optimal solution, ')
+    print('when the constraint bound of ' + str(len(constraint_names)) + ' constraints: ' + str(constraint_names[:]) + ' , are set to: ')
+    
+    con_bou_counter = 0
+    row_name_list = list(SA_Con_Bou.index)
+    for con_bou_counter in range(len(constraint_names)):
+        print(str(row_name_list[con_bou_counter*4 + 1]) + ' = ' + str(SA_Con_Bou.iloc[con_bou_counter*4 + 1, 1]) + ' , ')
+        con_bou_counter += 1
+    print('respectively.\n')
+    
+    print('If bounds are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Con_Bou.iloc[2,1]) + ' .\n')
+    print('The following graphs have shown the impacts on the objective value by changing the bound for each constraint: \n')
+    
+    # plot the objective value against changes in each bound
+    
+    plot_counter = 0
+    
+    for plot_counter in range(len(constraint_names)):
+         
+        x_g = []
+        y_g = []
+        
+        col_counter = 0
+        
+        for col_counter in range(SA_Con_Bou.shape[1]):
+            if isinstance(SA_Con_Bou.iloc[plot_counter*4 + 1, col_counter], int) == True or isinstance(SA_Con_Bou.iloc[plot_counter*4 + 1, col_counter], float) == True:
+                if isinstance(SA_Con_Bou.iloc[plot_counter*4 + 2, col_counter], int) == True or isinstance(SA_Con_Bou.iloc[plot_counter*4 + 2, col_counter], float) == True:
+                    x_g.append(SA_Con_Bou.iloc[plot_counter*4 + 1, col_counter])
+                    y_g.append(SA_Con_Bou.iloc[plot_counter*4 + 2, col_counter])
+
+            color_counter += 1  
+            
+        plt.plot(x_g, y_g, 'go')
+
+        plt.title('Objective Value Changes in Different Bound of ' + str(constraint_names[plot_counter]))
+        plt.xlabel('Bound of ' + str(constraint_names[plot_counter]))
+        plt.ylabel('Objective Value of ' + str(obj_names[0]))
+        plt.show()
+        
+        plt.clf()
+        plt.cla()
+        plt.close()
+        
+        plot_counter += 1
+    
     
     print('\n==================================================\n')
+   
     
+    # remove soft constraints
     
     SA_Con_Rem = Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_solution_Simplex)
     
