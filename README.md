@@ -4,7 +4,7 @@ Generating Explanations of Optimisation Solutions
 In the Context of Linear Programming
 
 Last Updated: 
-27th July 2018
+31st July 2018
 
 By:       Zeyang Zhang
 
