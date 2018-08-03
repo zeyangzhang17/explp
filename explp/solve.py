@@ -7,10 +7,10 @@
 
     
     
-# Last Updated: 27th July 2018
+# Last Updated: 3rd August 2018
 
 # Non-completed Parts:
-    
+
 # 1. Branch and Bound Algorithm:
     # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
 
@@ -22,6 +22,8 @@ import copy
 
 
 def Simplex():
+    
+    global tableau, optimal_solution_Simplex, NoFeasibleSolution
     
     # count for variables and constraints for further uses
     
@@ -207,6 +209,8 @@ def Simplex():
 # Branch_And_Bound Function:
 
 def Branch_And_Bound():
+    
+    global optimal_solution_Branch_and_Bound
     
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
@@ -575,8 +579,19 @@ def Solve():
         BB_Solution = Branch_And_Bound()
         optimal_solution_Branch_and_Bound = BB_Solution[0]
 
-    
+
 Solve()
+
+global Deep_Copy_tableau, Deep_Copy_Simplex, Deep_Copy_NoFeasibleSolution, Deep_Copy_Branch_and_Bound
+
+try:
+    Deep_Copy_tableau = copy.deepcopy(tableau)
+    Deep_Copy_Simplex = copy.deepcopy(optimal_solution_Simplex)
+    Deep_Copy_NoFeasibleSolution = copy.deepcopy(NoFeasibleSolution)
+    Deep_Copy_Branch_and_Bound = copy.deepcopy(optimal_solution_Branch_and_Bound)
+except NameError:
+    pass
+
 
 
 # The End of Solve Module
