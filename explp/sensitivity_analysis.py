@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 31st July 2018
+# Last Updated: 3rd August 2018
 
 # Possible Further Improvement:
     # 1. add functionality that computing how much can be changed before optimal solution changes
@@ -46,6 +46,8 @@ else:
 # By changing optimal solution up and down 1 unit and -100% to +100%, in order to see how the objective changes and whether constraints are violated
     
 def Optimal_Var(optimal_solution_Simplex):
+    
+    global table_var_changes
     
     optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
@@ -255,6 +257,8 @@ def Optimal_Var(optimal_solution_Simplex):
 
 def Obj_Coef(obj_coef, optimal_solution_Simplex):
     
+    global table_obj_coef
+    
     original_obj_coef = copy.deepcopy(obj_coef[:])
     
     original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
@@ -444,6 +448,8 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
 
 
 def Con_Bound(bound, constraint_names, optimal_solution_Simplex): 
+    
+    global table_bound
     
     original_con_bound = copy.deepcopy(bound[:])
     
@@ -639,6 +645,8 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
 # constraint remove sensitivity analysis function
 
 def Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_solution_Simplex):
+    
+    global table_con_remove
     
     original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
     
@@ -956,6 +964,7 @@ def Sensitivity_Analysis():
     
     
 Sensitivity_Analysis()
+
 
 
 # The End of Sensitivity Analysis Module
