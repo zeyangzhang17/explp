@@ -201,9 +201,7 @@ def Simplex():
         else:
             print('There is a high probability that constraints are contradicting with each other!\n')
             print('Please check for the constraints.\n')
-        return NoFeasibleSolution
-    else:
-        return tableau, optimal_solution_Simplex
+
 
 
 # Branch_And_Bound Function:
@@ -236,6 +234,8 @@ def Branch_And_Bound():
     # check if all required integer constraint is satisfied
         
     def list_int_checker(List):
+        
+        global all_int, int_counter
     
         # check if all items in the list are met with integer constraints
     
@@ -257,8 +257,7 @@ def Branch_And_Bound():
                 all_int = False
                 break
             
-        return all_int, int_counter
-    
+ 
     int_checker = list_int_checker(int_con_sol_var)
     all_int = int_checker[0]
     int_counter = int_checker[1]
@@ -277,6 +276,8 @@ def Branch_And_Bound():
         
         
         # Branch 1: Floor
+        
+        global Floor_NoFS, Floor_optimal_solution_Simplex
                 
         # take the targetted non-integer variable out of objectives and constraints
         
@@ -373,15 +374,13 @@ def Branch_And_Bound():
 
         if NoFeasibleSolution == True:
             print('\nThere is NO Feasible Solutions!\n')
-            return Floor_NoFS
-        else:
-            return Floor_optimal_solution_Simplex
 
 
         # Same for the ceiling
         # Branch 2: Ceiling
        
-                
+        global Ceiling_NoFS, Ceiling_optimal_solution_Simplex
+        
         pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceiling_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
         pivoting = pivoting_ceiling
@@ -478,9 +477,6 @@ def Branch_And_Bound():
 
         if NoFeasibleSolution == True:
             print('\nThere is NO Feasible Solutions!\n')
-            return Ceiling_NoFS
-        else:
-            return Ceiling_optimal_solution_Simplex
 
         
         # Comparing Floor branch and Ceiling Branch
@@ -541,7 +537,6 @@ def Branch_And_Bound():
     optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
     
     print('All integer constraints are met!')  
-    return optimal_solution_Branch_and_Bound
 
 
 
@@ -586,8 +581,20 @@ global Deep_Copy_tableau, Deep_Copy_Simplex, Deep_Copy_NoFeasibleSolution, Deep_
 
 try:
     Deep_Copy_tableau = copy.deepcopy(tableau)
+except NameError:
+    pass
+
+try:
     Deep_Copy_Simplex = copy.deepcopy(optimal_solution_Simplex)
+except NameError:
+    pass
+
+try:
     Deep_Copy_NoFeasibleSolution = copy.deepcopy(NoFeasibleSolution)
+except NameError:
+    pass
+
+try:
     Deep_Copy_Branch_and_Bound = copy.deepcopy(optimal_solution_Branch_and_Bound)
 except NameError:
     pass
