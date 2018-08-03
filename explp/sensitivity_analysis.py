@@ -15,7 +15,6 @@
     # 1. add functionality that computing how much can be changed before optimal solution changes
     # 2. maybe limit the bound changes only to soft constraints
     # 3. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
-    # 4. add graphs for feasible region and objective function
 
 
 
