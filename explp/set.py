@@ -8,17 +8,20 @@
 
     
     
-# Last Updated: 13th July 2018
+# Last Updated: 3rd August 2018
 
 
 
 import numpy as np
 import pandas as pd
+import copy
 
 
 # Objective Function:
 
 def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
+    
+    global obj_names, obj_coef, variable_names, obj_max
     
     # check if the problem is multi-objective
     
@@ -59,6 +62,8 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
 # Multi_objective Function:
 
 def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coefficient=[], Maximise=True):
+    
+    global multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max
     
     # check if the problem is single objective
     
@@ -130,6 +135,8 @@ def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coe
 
 def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bound_Value=[], Maximise=False, Type=[]):
     
+    global constraint_names, constraint, bound_names, bound, constraint_type
+    
     # check for the length of constraints name input
     
     len_con_name = len(Constraint_Name)
@@ -168,6 +175,8 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
 
 def integer_constraint(Integer_Variable_Names = []):
     
+    global Integer_Variable_Name, Integer_Index
+    
     # check if the integer variable name is in the list of variables
     
     if set(Integer_Variable_Names).issubset(variable_names) == False:
@@ -186,6 +195,20 @@ def integer_constraint(Integer_Variable_Names = []):
     Integer_Variable_Name = Integer_Variable_Names
     
     return Integer_Variable_Name, Integer_Index
+
+
+        
+# Before soving the problem, firstly record all the input with deep copy in case the variable changes in the following steps
+
+global Deep_Copy_objective, Deep_Copy_multi_objective, Deep_Copy_constraint, Deep_Copy_integer_constraint
+
+try:
+    Deep_Copy_objective = copy.deepcopy([obj_names, obj_coef, variable_names, obj_max])
+    Deep_Copy_multi_objective = copy.deepcopy([multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max])
+    Deep_Copy_constraint = copy.deepcopy([constraint_names, constraint, bound_names, bound, constraint_type])
+    Deep_Copy_integer_constraint = copy.deepcopy([Integer_Variable_Name, Integer_Index])
+except NameError:
+    pass
 
 
 
