@@ -1,3 +1,4 @@
+# Module: set 
 
 # Functions:
     # set.objective()
@@ -32,17 +33,10 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
         
     len_var_name = len(Variable_Name)
     len_var_coef = len(Variable_Coefficient)
-
-    len_counter = 0
     
     # check if the length of variable coefficients are matching with names
-
-    for len_counter in range(len_var_coef):
-        if len(Variable_Coefficient[len_counter]) != len_var_name:
-            print('Error! The Length of Variable Name and Variable Coefficient DO NOT Match!')
-            break
-        else:
-            len_counter += 1
+    if len_var_name != len_var_name:
+        print('Error! The Length of Variable Name and Variable Coefficient DO NOT Match!')
     
     # Transforming to the stardard form
     
@@ -144,14 +138,8 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
    
     # check if the length of constraints coefficients are matching with names
     
-    len_counter = 0
-
-    for len_counter in range(len_con_coef):
-        if len(Constraint_Coefficient[len_counter]) != len_con_name:
-            print('Error! The Length of Constraint Name and Constraint Coefficient DO NOT Match!')
-            break
-        else:
-            len_counter += 1
+    if len_con_coef != len_con_name:
+        print('Error! The Length of Constraint Name and Constraint Coefficient DO NOT Match!')
     
     # Transforming to the stardard form
     
@@ -159,7 +147,11 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
         constraint = Constraint_Coefficient
         bound = Bound_Value
     else:
-        constraint = [- value for value in Constraint_Coefficient]
+        constraint = []
+        neg_counter = 0
+        for neg_counter in range(len(Constraint_Coefficient)):
+            constraint.append([- value for value in Constraint_Coefficient[neg_counter]])
+            neg_counter += 1
         bound = [- value for value in Bound_Value]  
     
     constraint_names = Constraint_Name
