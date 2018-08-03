@@ -1,10 +1,10 @@
-# Module: set 
 
 # Functions:
     # set.objective()
     # set.multi_objective()
     # set.constraint()
     # set.integer_constraint()
+    # set.complete()
 
     
     
@@ -200,16 +200,110 @@ def integer_constraint(Integer_Variable_Names = []):
         
 # Before soving the problem, firstly record all the input with deep copy in case the variable changes in the following steps
 
-global Deep_Copy_objective, Deep_Copy_multi_objective, Deep_Copy_constraint, Deep_Copy_integer_constraint
+# complete function to copy the input for comparison in further steps
+# and summarize inputs
 
-try:
-    Deep_Copy_objective = copy.deepcopy([obj_names, obj_coef, variable_names, obj_max])
-    Deep_Copy_multi_objective = copy.deepcopy([multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max])
-    Deep_Copy_constraint = copy.deepcopy([constraint_names, constraint, bound_names, bound, constraint_type])
-    Deep_Copy_integer_constraint = copy.deepcopy([Integer_Variable_Name, Integer_Index])
-except NameError:
-    pass
+def complete():
+    
+    global Deep_Copy_objective, Deep_Copy_multi_objective, Deep_Copy_constraint, Deep_Copy_integer_constraint
 
+    def print_frame(*words):
+        
+        size = max(len(word) for word in words)
+        print('\033[1m' + '=' * (size + 6))
+        
+        for word in words:
+            print('\033[1m' + '== {w:<{s}} =='.format(w=word, s=size))
+            
+        print('\033[1m' + '=' * (size + 6))
+    
+    print_frame("Summary of", "Settings for: ", obj_names[0])
+    
+    # summarize objective
+    
+    try:
+        Deep_Copy_objective = copy.deepcopy([obj_names, obj_coef, variable_names, obj_max])
+        print("\nYou have set the objective " + str(obj_names[0]) + " to:\n")
+        
+        print_counter = 0
+        
+        if obj_max == True:
+            print("To Maximise " + str(obj_names[0]) + " = ", end="")
+        else:
+            print("To Minimise " + str(obj_names[0]) + " = ", end="")
+            
+        for print_counter in range(len(variable_names)-1):
+            print(str(obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+            print_counter += 1
+        print(str(obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
+              
+    except NameError:
+        print("\n(Note: You havn't set any single objective.)\n")
+    
+    # summarize multi-objective
+              
+    try:
+        Deep_Copy_multi_objective = copy.deepcopy([multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max])
+        multi_counter = 0
+        print_counter = 0
+        
+        for multi_counter in range(len(multi_obj_names)):
+            print("\nYou have set the objective " + str(multi_obj_names[multi_counter]) + " to:\n")
+            if multi_obj_max[multi_counter] == True:
+                print("To Maximise " + str(obj_names[multi_counter]) + " = ", end="")
+            else:
+                print("To Minimise " + str(obj_names[multi_counter]) + " = ", end="")
 
+            for print_counter in range(len(variable_names)-1):
+                print(str(multi_obj_coef[multi_counter][print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+                print_counter += 1
+            print(str(multi_obj_coef[multi_counter][-1]) + " * " + str(variable_names[-1]) + " ; \n")  
+            multi_counter += 1
+        
+        print("\nBy applying coefficients to multi-objectives, the problem is converted to single-objective: " + str(multi_obj_names) + " to: \n")
+        print("To Maximise " + str(obj_names[0]) + " = ", end="")
+              
+        print_counter = 0
+        
+        for print_counter in range(len(variable_names)-1):
+            print(str(obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+            print_counter += 1
+        print(str(obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
+              
+    except NameError:
+        print("\n(Note: You havn't set any other multiple objectives.)\n")
+    
+    # summarize non-integer constraints
+              
+    try:
+        Deep_Copy_constraint = copy.deepcopy([constraint_names, constraint, bound_names, bound, constraint_type])
+        print("\nSubject to: \n")
+              
+        print_counter = 0
+        var_counter = 0
+        
+        for print_counter in range(len(constraint_names)):
+            print(str(constraint_type[print_counter]) + " constraints: " + str(constraint_names[print_counter]) + " : ", end = "")
+            for var_counter in range(len(variable_names)-1):
+                print(str(constraint[print_counter][var_counter]) + " * " + str(variable_names[var_counter]) + " + ", end = "")
+                var_counter += 1
+            print(str(constraint[print_counter][-1]) + " * " + str(variable_names[-1]) + " <= " + str(bound[print_counter]) + " ; \n")
+            print_counter += 1         
+              
+    except NameError:
+        ("\n(Note: You havn't set any non-integer constraints.)\n")
+    
+    # summarize integer constraints
+              
+    try:
+        Deep_Copy_integer_constraint = copy.deepcopy([Integer_Variable_Name, Integer_Index])
+        print("\nYou have set the variables: " + str(Integer_Variable_Name[:]) + " to take only integer values.\n")
+    except NameError:
+        print("\n(Note: You havn't set any variables to be integer.)\n")
+        
+    
+    print_frame("The End of", "Summary of", "Settings for: ", obj_names[0])
+    
+    
 
 # The End of Set Module
