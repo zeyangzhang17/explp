@@ -48,8 +48,6 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
     obj_names = Objective_Name 
     variable_names = Variable_Name
     obj_max = Maximise
-    
-    return obj_names, obj_coef, variable_names, obj_max
 
 
 
@@ -121,8 +119,6 @@ def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coe
     variable_names = Variable_Name
     multi_obj_max = Maximise
     
-    return multi_obj_names, obj_names, multi_obj_coef, obj_coef, variable_names, multi_obj_max
-
 
 
 # Constraint Function:
@@ -158,10 +154,8 @@ def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bou
     bound_names = Bound_Name
     con_max = Maximise
     constraint_type = Type
+
     
-    return constraint_names, constraint, bound_names, bound, constraint_type
-
-
 
 # Integer_constraint Function:
 
@@ -185,8 +179,6 @@ def integer_constraint(Integer_Variable_Names = []):
         index_counter += 1
     
     Integer_Variable_Name = Integer_Variable_Names
-    
-    return Integer_Variable_Name, Integer_Index
 
 
         
