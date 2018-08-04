@@ -9,7 +9,7 @@
     # alternative.new_input_checker()
 
     
-# Last Updated: 3rd August 2018
+# Last Updated: 4th August 2018
 
 
 
@@ -57,6 +57,7 @@ def objective(Objective_Name=[], Variable_Name=[], Variable_Coefficient=[], Maxi
         
     except NameError: 
         print("Previously the single objective is not defined.\n")
+        explp.set.objective(Objective_Name, Variable_Name, Variable_Coefficient, Maximise)
         
     print("Now the objective is set to: \n")
     
@@ -88,70 +89,178 @@ def multi_objective(Objective_Name=[], Lambda=[], Variable_Name=[], Variable_Coe
         
     except NameError:
         print("Previously the multi-objectives are not defined.\n")
-        
+        explp.set.multi_objective(Objective_Name, Lambda, Variable_Name, Variable_Coefficient, Maximise)
     
+    multi_counter = 0
+    print_counter = 0
+        
+    for multi_counter in range(len(multi_obj_names)):
+        print("\nYou have now set the objective " + str(multi_obj_names[multi_counter]) + " to:\n")
+        if multi_obj_max[multi_counter] == True:
+            print("To Maximise " + str(obj_names[multi_counter]) + " = ", end="")
+        else:
+            print("To Minimise " + str(obj_names[multi_counter]) + " = ", end="")
+
+        for print_counter in range(len(variable_names)-1):
+            print(str(multi_obj_coef[multi_counter][print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+            print_counter += 1
+        print(str(multi_obj_coef[multi_counter][-1]) + " * " + str(variable_names[-1]) + " ; \n")  
+        multi_counter += 1
+        
+    print("\nBy applying coefficients to multi-objectives, the problem is converted to single-objective: " + str(multi_obj_names) + " to: \n")
+    print("To Maximise " + str(obj_names[0]) + " = ", end="")
+              
+    print_counter = 0
+        
+    for print_counter in range(len(variable_names)-1):
+        print(str(obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+        print_counter += 1
+    print(str(obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
     
 
 # Constraint Function:
 
 def constraint(Constraint_Name=[], Constraint_Coefficient=[], Bound_Name=[], Bound_Value=[], Maximise=False, Type=[]):
-
-    explp.set.constraint(Constraint_Name, Constraint_Coefficient, Bound_Name, Bound_Value, Maximise, Type)
+    
+    try:   
+        Original_constraint = copy.deepcopy(Deep_Copy_constraint)
+        
+        explp.set.constraint(Constraint_Name, Constraint_Coefficient, Bound_Name, Bound_Value, Maximise, Type)
+        
+        new_constraint = [constraint_names, constraint, bound_names, bound, constraint_type]
+        constraint_name_list = ["The name of constraints", "The coefficient of constraints", "The name of the bound", "The value of the bound", "The constraints are less or equal to the bound", "The type of constraints"]
+        new_input_checker(Original_constraint, new_constraint, constraint_name_list)
+        
+    except NameError:
+        print("Previously the non-integer constraints are not defined.\n")
+        explp.set.constraint(Constraint_Name, Constraint_Coefficient, Bound_Name, Bound_Value, Maximise, Type)
+        
+    print("\nNow the problem is subject to: \n")
+              
+    print_counter = 0
+    var_counter = 0
+        
+    for print_counter in range(len(constraint_names)):
+        print(str(constraint_type[print_counter]) + " constraints: " + str(constraint_names[print_counter]) + " : ", end = "")
+        for var_counter in range(len(variable_names)-1):
+            print(str(constraint[print_counter][var_counter]) + " * " + str(variable_names[var_counter]) + " + ", end = "")
+            var_counter += 1
+        print(str(constraint[print_counter][-1]) + " * " + str(variable_names[-1]) + " <= " + str(bound[print_counter]) + " ; \n")
+        print_counter += 1 
+        
 
 # Integer_constraint Function:
 
 def integer_constraint(Integer_Variable_Names = []):
     
-    explp.set.integer_constraint(Integer_Variable_Names)
+    try: 
+        Original_integer_constraint = copy.deepcopy(Deep_Copy_integer_constraint)
+        
+        explp.set.integer_constraint(Integer_Variable_Names)
+        
+        new_integer_constraint = [Integer_Variable_Name, Integer_Index]
+        integer_constraint_name_list = ["The name of the variable set to integer", "The n-th variable in variable list is set to integer"]
+        new_input_checker(Original_integer_constraint, new_integer_constraint, integer_constraint_name_list)
     
+    except NameError:
+        print("Previously the integer constraints are not defined.\n")
+        explp.set.integer_constraint(Integer_Variable_Names)
+        
+        print("\nYou have now set the variables: " + str(Integer_Variable_Name[:]) + " to take only integer values.\n")
+        
 
 # Compare Function:
 
 def compare():
     
-    # firstly retrieve the deep copy of original inputs and solutions, and deep copy them in case changes 
+    # firstly retrieve the deep copy of original solutions, and deep copy them in case changes 
     
-    
-
-    
-    try:   
-        Original_constraint = copy.deepcopy(Deep_Copy_constraint)
-    except NameError:
-        Original_constraint = None
-        
-    try: 
-        Original_integer_constraint = copy.deepcopy(Deep_Copy_integer_constraint)
-    except NameError:   
-        Original_integer_constraint = None
+    # try simplex
     
     try:
-        Original_tableau = copy.deepcopy(Deep_Copy_tableau)
+        Original_optimal_solution_Simplex = copy.deepcopy(Deep_Copy_Simplex)          
     except NameError:
-        Original_tableau = None
+        pass
+    else:
+        output_counter = 0
+            
+        print('\nThe previous optimal solution is as follows:\n')
+        print('The optimal value for the objective is ' + str(Original_optimal_solution_Simplex[0]) + ' ;\n')
         
-    try:
-        Original_optimal_solution_Simplex = copy.deepcopy(Deep_Copy_Simplex)
-    except NameError:
-        Original_optimal_solution_Simplex = None
-        
+        try:
+            original_variable_names = Deep_Copy_objective[2]
+        except NameError:
+            try:
+                original_variable_names = Deep_Copy_multi_objective[4]
+            except NameError:
+                pass
+            else:
+                print('\nWhen: \n')    
+                for output_counter in range(len(original_variable_names)):
+                    print(str(original_variable_names[output_counter]) + ' is set to ' + str(Original_optimal_solution_Simplex[1][output_counter]) + '\n')
+                    output_counter += 1
+        else:
+            print('\nWhen: \n')    
+            for output_counter in range(len(original_variable_names)):
+                print(str(original_variable_names[output_counter]) + ' is set to ' + str(Original_optimal_solution_Simplex[1][output_counter]) + '\n')
+                output_counter += 1
+    
+    # try if no feasible solutions
+    
     try:
         Original_NoFeasibleSolution = copy.deepcopy(Deep_Copy_NoFeasibleSolution)
+        if Original_NoFeasibleSolution == True:
+            print("\nThere are no feasible solutions for the problem under previous settings.\n")
     except NameError: 
-        Original_NoFeasibleSolution = None
+        pass
+    
+    # try branch & bound
     
     try:
         Original_optimal_solution_Branch_and_Bound = copy.deepcopy(Deep_Copy_Branch_and_Bound)
     except NameError:
-        Original_optimal_solution_Branch_and_Bound = None
+        pass
+    else:
+        output_counter = 0
+            
+        print('\nThe previous optimal solution is as follows:\n')
+        print('The optimal value for the objective is ' + str(Original_optimal_solution_Branch_and_Bound[0]) + ' ;\n')
+        
+        try:
+            original_variable_names = Deep_Copy_objective[2]
+        except NameError:
+            try:
+                original_variable_names = Deep_Copy_multi_objective[4]
+            except NameError:
+                pass
+            else:
+                print('\nWhen: \n')    
+                for output_counter in range(len(original_variable_names)):
+                    print(str(original_variable_names[output_counter]) + ' is set to ' + str(Original_optimal_solution_Branch_and_Bound[1][output_counter]) + '\n')
+                    output_counter += 1
+        else:
+            print('\nWhen: \n')    
+            for output_counter in range(len(original_variable_names)):
+                print(str(original_variable_names[output_counter]) + ' is set to ' + str(Original_optimal_solution_Branch_and_Bound[1][output_counter]) + '\n')
+                output_counter += 1
         
     
+    # then solve and do sensitivity analysis under the new settings
     
-    
+    print('\n==================================================\n')
+    print('The solution and sensitivity analysis under the new settings are as follows: ')
+    print('\n==================================================\n')
     
     Solve()
+    
     Sensitivity_Analysis()
+    
+    print('\n==================================================\n')
+    print('In conclusion, the optimal objective value has ', end = '')
+    
 
     
+    print('\n==================================================\n')
 
 
 # The End of Alternative Module
