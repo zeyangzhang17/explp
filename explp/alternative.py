@@ -11,6 +11,37 @@
     
 # Last Updated: 4th August 2018
 
+# bug to be configured:
+
+''' 
+TypeError                                 Traceback (most recent call last)
+<ipython-input-8-4c426ec755cc> in <module>()
+----> 1 compare()
+
+<ipython-input-7-3606776a6610> in compare()
+    254     print('\n==================================================\n')
+    255 
+--> 256     Solve()
+    257 
+    258     try:
+
+<ipython-input-3-6c2dfb8d8d5b> in Solve()
+    552 
+    553     except NameError:
+--> 554         Simplex()
+    555 
+    556         try:
+
+<ipython-input-3-6c2dfb8d8d5b> in Simplex()
+     46 
+     47     for counter_constriant in range(con_count):
+---> 48         constraint_dataframe.update({constraint_names[counter_constriant]:constraint[counter_constriant]})
+     49         counter_constraint += 1
+     50 
+
+TypeError: 'function' object is not subscriptable
+'''
+
 
 
 import numpy as np
@@ -177,6 +208,8 @@ def compare():
     
     # try simplex
     
+    original_objective_value_optimal = None
+    
     try:
         Original_optimal_solution_Simplex = copy.deepcopy(Deep_Copy_Simplex)          
     except NameError:
@@ -186,6 +219,7 @@ def compare():
             
         print('\nThe previous optimal solution is as follows:\n')
         print('The optimal value for the objective is ' + str(Original_optimal_solution_Simplex[0]) + ' ;\n')
+        original_objective_value_optimal = Original_optimal_solution_Simplex[0]
         
         try:
             original_variable_names = Deep_Copy_objective[2]
@@ -211,6 +245,7 @@ def compare():
         Original_NoFeasibleSolution = copy.deepcopy(Deep_Copy_NoFeasibleSolution)
         if Original_NoFeasibleSolution == True:
             print("\nThere are no feasible solutions for the problem under previous settings.\n")
+            original_objective_value_optimal = None
     except NameError: 
         pass
     
@@ -225,6 +260,7 @@ def compare():
             
         print('\nThe previous optimal solution is as follows:\n')
         print('The optimal value for the objective is ' + str(Original_optimal_solution_Branch_and_Bound[0]) + ' ;\n')
+        original_objective_value_optimal = Original_optimal_solution_Branch_and_Bound[0]
         
         try:
             original_variable_names = Deep_Copy_objective[2]
@@ -253,14 +289,37 @@ def compare():
     
     Solve()
     
+    try:
+        new_objective_value_optimal = optimal_solution_Simplex[0]
+    except NameError:
+        try:
+            new_objective_value_optimal = optimal_solution_Branch_and_Bound[0]
+        except NameError:
+            new_objective_value_optimal = None
+    
     Sensitivity_Analysis()
     
     print('\n==================================================\n')
     print('In conclusion, the optimal objective value has ', end = '')
     
-
+    if original_objective_value_optimal == None:
+        if new_objective_value_optimal == None:
+            print('not changed.\nThe problem remains infeasible without optimal solution.\n')
+        else:
+            print('become feasible.\nThe problem now has an optimal solution, with objective value = ' + str(new_objective_value_optimal) + '.\n')
+    
+    else:
+        if new_objective_value_optimal == None:
+            print('become infeasible.\nThe problem now is infeasible without optimal solution.\n')
+        elif original_objective_value_optimal > new_objective_value_optimal:
+            print('changed.\nThe new objective value is smaller than the previous solution.\n')
+        elif original_objective_value_optimal < new_objective_value_optimal:
+            print('changed.\nThe new objective value is larger than the previous solution.\n')
+        else:
+            print('not changed.\nThe optimal objective value remains to be ' + str(original_objective_value_optimal) + ' .\n')
     
     print('\n==================================================\n')
 
 
+    
 # The End of Alternative Module
