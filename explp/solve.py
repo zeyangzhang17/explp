@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 3rd August 2018
+# Last Updated: 4th August 2018
 
 # Non-completed Parts:
 
@@ -549,16 +549,16 @@ def Solve():
     
     try:
         Integer_Variable_Name
+        
     except NameError:
-        Simplex_Solution = Simplex()
+        Simplex()
         
         try:
-            len(Simplex_Solution[0])
+            optimal_solution_Simplex
         except TypeError:
             NoFeasibleSolution = True
+            print('\nNo feasible solution is found for ' + str(obj_names[0]) + ' !\n')
         else:
-            tableau = Simplex_Solution[0]
-            optimal_solution_Simplex = Simplex_Solution[1]
             NoFeasibleSolution = False
             
             output_counter = 0
@@ -571,8 +571,24 @@ def Solve():
                 output_counter += 1
         
     else:
-        BB_Solution = Branch_And_Bound()
-        optimal_solution_Branch_and_Bound = BB_Solution[0]
+        Branch_And_Bound()
+
+        try:
+            optimal_solution_Branch_and_Bound
+        except TypeError:
+            NoFeasibleSolution = True
+            print('\nNo feasible solution is found for ' + str(obj_names[0]) + ' !\n')
+        else:
+            NoFeasibleSolution = False
+            
+            output_counter = 0
+            
+            print('\nThe optimal solution is found for ' + str(obj_names[0]) + ' !\n')
+            print('The optimal value for the objective ' + str(obj_names[0]) + ' is ' + str(optimal_solution_Branch_and_Bound[0]) + ' ;\n\nWhen: \n')
+            
+            for output_counter in range(len(variable_names)):
+                print(str(variable_names[output_counter]) + ' is set to ' + str(optimal_solution_Branch_and_Bound[1][output_counter]) + '\n')
+                output_counter += 1
 
 
 Solve()
