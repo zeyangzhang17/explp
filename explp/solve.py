@@ -7,7 +7,10 @@
 
     
     
-# Last Updated: 4th August 2018
+# Last Updated: 7th August 2018
+
+# Debugged for the branch-and-bound algorithm
+# but now need a long time to solve
 
 # Non-completed Parts:
 
@@ -206,17 +209,12 @@ def Simplex():
 
 # Branch_And_Bound Function:
 
-def Branch_And_Bound():
+def Branch_And_Bound(optimal_solution_Simplex):
     
     global optimal_solution_Branch_and_Bound
     
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
-    
-    global_optimal_solution = Simplex()
-
-    tableau = global_optimal_solution[0]
-    optimal_solution_Simplex = global_optimal_solution[1]
     
     # Non integer-constrained solution -- objective value and variable coefficient
     
@@ -258,9 +256,8 @@ def Branch_And_Bound():
                 break
             
  
-    int_checker = list_int_checker(int_con_sol_var)
-    all_int = int_checker[0]
-    int_counter = int_checker[1]
+    list_int_checker(int_con_sol_var)
+
     
     while all_int == False:
         
@@ -381,7 +378,7 @@ def Branch_And_Bound():
        
         global Ceiling_NoFS, Ceiling_optimal_solution_Simplex
         
-        pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceiling_bnb)
+        pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceil_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
         pivoting = pivoting_ceiling
         
@@ -469,7 +466,7 @@ def Branch_And_Bound():
         
         # add back fixed variable (ceiling value) to the optimal solution
         
-        var_optimal += [ceiling_bnb]
+        var_optimal += [ceil_bnb]
         var_optimal.insert(bnb_var_index, var_optimal.pop())
 
         Ceiling_optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
@@ -524,8 +521,6 @@ def Branch_And_Bound():
             int_con_sol_var.append(non_int_con_sol_var[integer_index])
             
         list_int_checker(int_con_sol_var)
-        int_checker = list_int_checker(int_con_sol_var)
-        all_int = int_checker[0]
 
 
     # sort the solution into the same form as Simplex Function for futher iterations
@@ -571,7 +566,8 @@ def Solve():
                 output_counter += 1
         
     else:
-        Branch_And_Bound()
+        Simplex()
+        Branch_And_Bound(optimal_solution_Simplex)
 
         try:
             optimal_solution_Branch_and_Bound
