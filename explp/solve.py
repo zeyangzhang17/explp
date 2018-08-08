@@ -7,15 +7,8 @@
 
     
     
-# Last Updated: 7th August 2018
+# Last Updated: 8th August 2018
 
-# Debugged for the branch-and-bound algorithm
-# but now need a long time to solve
-
-# Non-completed Parts:
-
-# 1. Branch and Bound Algorithm:
-    # Triangle Situation not solved (either ceil and floor value will cause non feasible solutions)
 
 
 import math
@@ -211,7 +204,7 @@ def Simplex():
 
 def Branch_And_Bound(optimal_solution_Simplex):
     
-    global optimal_solution_Branch_and_Bound
+    global optimal_solution_Branch_and_Bound, NoFeasibleSolution
     
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
@@ -241,7 +234,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         int_counter = 0
     
-        while int_counter in range(len(List)):
+        for int_counter in range(len(List)):
             
             # check if all integer constraints are met
             
@@ -257,6 +250,8 @@ def Branch_And_Bound(optimal_solution_Simplex):
             
  
     list_int_checker(int_con_sol_var)
+    
+    runtime_counter = 0
 
     
     while all_int == False:
@@ -280,7 +275,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         pivoting_floor.iloc[:,0] -= pivoting_floor.iloc[:,bnb_var_index+1] * (pivoting_floor.iloc[0,bnb_var_index+1] * floor_bnb)
         pivoting_floor.drop([variable_names[bnb_var_index]], axis = 1)
-        pivoting = pivoting_floor
+        pivoting = copy.deepcopy(pivoting_floor)
         
         # Then run the same steps as Simplex function
         
@@ -380,7 +375,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceil_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
-        pivoting = pivoting_ceiling
+        pivoting = copy.deepcopy(pivoting_ceiling)
         
         var_count = len(variable_names)-1
         con_count = len(constraint_names)
@@ -521,17 +516,29 @@ def Branch_And_Bound(optimal_solution_Simplex):
             int_con_sol_var.append(non_int_con_sol_var[integer_index])
             
         list_int_checker(int_con_sol_var)
+        
+        runtime_counter += 1
+        
+        if runtime_counter > 2 ** int(len(variable_names)):
+            print('Error! Too Many Iterations! Maybe caused by the Triangle Situation !\n')
+            NoFeasibleSolution == True
+            break
+        else:
+            continue
 
 
     # sort the solution into the same form as Simplex Function for futher iterations
-                
-    obj_BB = non_int_con_sol_obj
-    var_BB = non_int_con_sol_var
-    slack_BB = non_int_con_sol_slack
+    if all_int == True:           
+        obj_BB = non_int_con_sol_obj
+        var_BB = non_int_con_sol_var
+        slack_BB = non_int_con_sol_slack
+        optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
+        NoFeasibleSolution == False
+        print('\nAll integer constraints are met !\n')  
         
-    optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
-    
-    print('All integer constraints are met!')  
+    else:
+        NoFeasibleSolution == True
+        print('\nFeasible solution is not found !\n')
 
 
 
@@ -550,7 +557,7 @@ def Solve():
         
         try:
             optimal_solution_Simplex
-        except TypeError:
+        except NameError:
             NoFeasibleSolution = True
             print('\nNo feasible solution is found for ' + str(obj_names[0]) + ' !\n')
         else:
@@ -560,7 +567,7 @@ def Solve():
             
             print('\nThe optimal solution is found for ' + str(obj_names[0]) + ' !\n')
             print('The optimal value for the objective ' + str(obj_names[0]) + ' is ' + str(optimal_solution_Simplex[0]) + ' ;\n\nWhen: \n')
-            
+          
             for output_counter in range(len(variable_names)):
                 print(str(variable_names[output_counter]) + ' is set to ' + str(optimal_solution_Simplex[1][output_counter]) + '\n')
                 output_counter += 1
@@ -571,12 +578,11 @@ def Solve():
 
         try:
             optimal_solution_Branch_and_Bound
-        except TypeError:
+        except NameError:
             NoFeasibleSolution = True
             print('\nNo feasible solution is found for ' + str(obj_names[0]) + ' !\n')
         else:
             NoFeasibleSolution = False
-            
             output_counter = 0
             
             print('\nThe optimal solution is found for ' + str(obj_names[0]) + ' !\n')
