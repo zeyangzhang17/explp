@@ -211,9 +211,9 @@ def Branch_And_Bound(optimal_solution_Simplex):
     
     # Non integer-constrained solution -- objective value and variable coefficient
     
-    non_int_con_sol_obj = optimal_solution_Simplex[0]
-    non_int_con_sol_var = optimal_solution_Simplex[1]
-    non_int_con_sol_slack = optimal_solution_Simplex[2]
+    non_int_con_sol_obj = copy.deepcopy(optimal_solution_Simplex[0])
+    non_int_con_sol_var = copy.deepcopy(optimal_solution_Simplex[1])
+    non_int_con_sol_slack = copy.deepcopy(optimal_solution_Simplex[2])
     
     # record all interger constrained variables
     
@@ -258,8 +258,8 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         # use the first non-integer and compute floor and ceiling
         
-        bnb_var_index = Integer_Index[int_counter]
-        bnb_var = optimal_solution_Simplex[1][bnb_var_index]
+        bnb_var_index = copy.deepcopy(Integer_Index[int_counter])
+        bnb_var = copy.deepcopy(optimal_solution_Simplex[1][bnb_var_index])
         floor_bnb = np.floor(bnb_var)
         ceil_bnb = np.ceil(bnb_var)
         
@@ -361,7 +361,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         var_optimal += [floor_bnb]
         var_optimal.insert(bnb_var_index, var_optimal.pop())
         
-        Floor_optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
+        Floor_optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
         Floor_NoFS = NoFeasibleSolution
 
         if NoFeasibleSolution == True:
@@ -464,7 +464,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         var_optimal += [ceil_bnb]
         var_optimal.insert(bnb_var_index, var_optimal.pop())
 
-        Ceiling_optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
+        Ceiling_optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
         Ceiling_NoFS = NoFeasibleSolution
 
         if NoFeasibleSolution == True:
@@ -505,7 +505,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         # For possible further iterations, set optimal_solution_Simplex to current solution
         
-        optimal_solution_Simplex = [non_int_con_sol_obj, non_int_con_sol_var, non_int_con_sol_slack]
+        optimal_solution_Simplex = copy.deepcopy([non_int_con_sol_obj, non_int_con_sol_var, non_int_con_sol_slack])
         
         # check if all integer constraints are met now
         # if not, return all_int == False and iterate again
