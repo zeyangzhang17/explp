@@ -79,7 +79,7 @@ def Simplex():
     
     # creating pivot table
     
-    pivoting = tableau.copy()
+    pivoting = copy.deepcopy(tableau)
     
     pivoting_col_list = list(pivoting)
     
