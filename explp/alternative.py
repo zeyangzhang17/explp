@@ -9,38 +9,7 @@
     # alternative.new_input_checker()
 
     
-# Last Updated: 4th August 2018
-
-# bug to be configured:
-
-''' 
-TypeError                                 Traceback (most recent call last)
-<ipython-input-8-4c426ec755cc> in <module>()
-----> 1 compare()
-
-<ipython-input-7-3606776a6610> in compare()
-    254     print('\n==================================================\n')
-    255 
---> 256     Solve()
-    257 
-    258     try:
-
-<ipython-input-3-6c2dfb8d8d5b> in Solve()
-    552 
-    553     except NameError:
---> 554         Simplex()
-    555 
-    556         try:
-
-<ipython-input-3-6c2dfb8d8d5b> in Simplex()
-     46 
-     47     for counter_constriant in range(con_count):
----> 48         constraint_dataframe.update({constraint_names[counter_constriant]:constraint[counter_constriant]})
-     49         counter_constraint += 1
-     50 
-
-TypeError: 'function' object is not subscriptable
-'''
+# Last Updated: 8th August 2018
 
 
 
