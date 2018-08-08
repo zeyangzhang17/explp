@@ -41,7 +41,8 @@ def Simplex():
     counter_constraint = 0
 
     for counter_constriant in range(con_count):
-        constraint_dataframe.update({constraint_names[counter_constriant]:constraint[counter_constriant]})
+        constraint_value = Deep_Copy_constraint[1]
+        constraint_dataframe.update({constraint_names[counter_constriant]:constraint_value[counter_constriant]})
         counter_constraint += 1
     
     # introduce slack variables
@@ -53,7 +54,7 @@ def Simplex():
     
     # name the slack variables
     
-    for counter_names in range(len(constraint)):
+    for counter_names in range(len(constraint_value)):
         slack_var_names.append('slack_' + str(constraint_names[counter_names]))
         counter_names += 1
     
