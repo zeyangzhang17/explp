@@ -41,7 +41,7 @@ def Simplex():
     counter_constraint = 0
 
     for counter_constriant in range(con_count):
-        constraint_value = Deep_Copy_constraint[1]
+        constraint_value = copy.deepcopy(Deep_Copy_constraint[1])
         constraint_dataframe.update({constraint_names[counter_constriant]:constraint_value[counter_constriant]})
         counter_constraint += 1
     
@@ -92,7 +92,7 @@ def Simplex():
     
     # if any reduced costs (negative of objective coefficients) are negative:
     
-    while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
+    while any(pivoting.iloc[0,1:var_count+con_count+1].values<0) == True:
         
         times_counter += 1
     
@@ -100,13 +100,13 @@ def Simplex():
         
         # find the most negative value
         
-        if times_counter <= con_count:
-            pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+        if times_counter <= var_count+con_count:
+            pivot_column = pivoting.iloc[0,1:var_count+con_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+con_count+1])) + 1
             
         # if cycling, use Bland's rule to find the first negative value
         
         else:
-            pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+            pivot_list_cyc = pivoting.iloc[0,1:var_count+var_count+1].values.tolist()
             list_cyc_counter = 0
             for list_cyc_counter in range(len(pivot_list_cyc)):
                 if pivot_list_cyc[list_cyc_counter] < 0:
@@ -130,8 +130,11 @@ def Simplex():
 
         for pt_i in range(1,con_count+1):
             try:
-                ratio = pivoting[bound_names[0]][pt_i]/pivoting[pivoting_col_list[pivot_column]][pt_i]
+                ratio = pivoting.iloc[pt_i,0] / pivoting.iloc[pt_i,pivot_column]
             except ZeroDivisionError:
+                ratio = 0
+                
+            if pivoting.iloc[pt_i,0] <= 0 and pivoting.iloc[pt_i,pivot_column] <= 0:
                 ratio = 0
             test_ratios.append(ratio)
             pt_i += 1
@@ -159,11 +162,13 @@ def Simplex():
         
         for pi_count in range(con_count+1):
             if pi_count != pivot_row:
-                pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
-                pi_count += 1
+                pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pivot_row,:] * pivoting.iloc[pi_count, pivot_column] 
             else:
                 continue
-    
+                
+            pi_count += 1
+            
+        print(pivoting)
     obj_optimal = pivoting.iloc[0,0]
     
     # compute slack value in optimal solution
@@ -183,10 +188,12 @@ def Simplex():
     var_counter = 0
     
     for var_counter in range(len(pivot_row_record)):
-        var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+        if pivot_column_record[var_counter]-1 <= len(variable_names):
+            var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
         var_counter += 1
     
-    optimal_solution_Simplex = [obj_optimal, var_optimal, slack_optimal]
+    optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
+    print(optimal_solution_Simplex)
     
     if NoFeasibleSolution == True:
         
@@ -290,14 +297,14 @@ def Branch_And_Bound(optimal_solution_Simplex):
         pivot_row_record = []
         NoFeasibleSolution = False
 
-        while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
+        while any(pivoting.iloc[0,1:var_count+con_count+1].values<0) == True:
             times_counter += 1
         
-            if times_counter <= con_count:
-                pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+            if times_counter <= var_count+con_count:
+                pivot_column = pivoting.iloc[0,1:var_count+con_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+con_count+1])) + 1
 
             else:
-                pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+                pivot_list_cyc = pivoting.iloc[0,1:var_count+con_count+1].values.tolist()
                 list_cyc_counter = 0
                 for list_cyc_counter in range(len(pivot_list_cyc)):
                     if pivot_list_cyc[list_cyc_counter] < 0:
@@ -319,12 +326,15 @@ def Branch_And_Bound(optimal_solution_Simplex):
 
             for pt_i in range(1,con_count+1):
                 try:
-                    ratio = pivoting[bound_names[0]][pt_i]/pivoting[pivoting_col_list[pivot_column]][pt_i]
+                    ratio = pivoting.iloc[pt_i,0] / pivoting.iloc[pt_i,pivot_column]
                 except ZeroDivisionError:
+                    ratio = 0
+
+                if pivoting.iloc[pt_i,0] <= 0 and pivoting.iloc[pt_i,pivot_column] <= 0:
                     ratio = 0
                 test_ratios.append(ratio)
                 pt_i += 1
-
+        
             if all(ratio <= 0 for ratio in test_ratios) == True:
                 NoFeasibleSolution = True
                 print('Error! The Problem is UN-BOUNDED !')
@@ -339,9 +349,10 @@ def Branch_And_Bound(optimal_solution_Simplex):
             for pi_count in range(con_count+1):
                 if pi_count != pivot_row:
                     pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
-                    pi_count += 1
                 else:
-                    continue        
+                    continue
+                    
+                pi_count += 1
 
         obj_optimal = pivoting.iloc[0,0]
         slack_optimal = pivoting.iloc[1:,0].tolist()
@@ -353,9 +364,10 @@ def Branch_And_Bound(optimal_solution_Simplex):
 
         var_optimal = [0] * var_count
         var_counter = 0
-
+    
         for var_counter in range(len(pivot_row_record)):
-            var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            if pivot_column_record[var_counter]-1 <= len(variable_names):
+                var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
             var_counter += 1
             
         # add back fixed variable (floor value) to the optimal solution
@@ -383,14 +395,14 @@ def Branch_And_Bound(optimal_solution_Simplex):
         pivot_row_record = []
         NoFeasibleSolution = False
 
-        while any(pivoting.iloc[0,1:var_count+1].values<0) == True:
+        while any(pivoting.iloc[0,1:var_count+con_count+1].values<0) == True:
             times_counter += 1
         
-            if times_counter <= con_count:
-                pivot_column = pivoting.iloc[0,1:var_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+1])) + 1
+            if times_counter <= var_count+con_count:
+                pivot_column = pivoting.iloc[0,1:var_count+con_count+1].values.tolist().index(min(pivoting.iloc[0,1:var_count+con_count+1])) + 1
 
             else:
-                pivot_list_cyc = pivoting.iloc[0,1:var_count+1].values.tolist()
+                pivot_list_cyc = pivoting.iloc[0,1:var_count+con_count+1].values.tolist()
                 list_cyc_counter = 0
                 for list_cyc_counter in range(len(pivot_list_cyc)):
                     if pivot_list_cyc[list_cyc_counter] < 0:
@@ -412,8 +424,11 @@ def Branch_And_Bound(optimal_solution_Simplex):
 
             for pt_i in range(1,con_count+1):
                 try:
-                    ratio = pivoting[bound_names[0]][pt_i]/pivoting[pivoting_col_list[pivot_column]][pt_i]
+                    ratio = pivoting.iloc[pt_i,0] / pivoting.iloc[pt_i,pivot_column]
                 except ZeroDivisionError:
+                    ratio = 0
+
+                if pivoting.iloc[pt_i,0] <= 0 and pivoting.iloc[pt_i,pivot_column] <= 0:
                     ratio = 0
                 test_ratios.append(ratio)
                 pt_i += 1
@@ -432,10 +447,10 @@ def Branch_And_Bound(optimal_solution_Simplex):
             for pi_count in range(con_count+1):
                 if pi_count != pivot_row:
                     pivoting.iloc[pi_count,:] = pivoting.iloc[pi_count,:] - pivoting.iloc[pi_count, pivot_column] * pivoting.iloc[pivot_row,:]
-                    pi_count += 1
                 else:
                     continue
-
+                    
+                pi_count += 1
 
         obj_optimal = pivoting.iloc[0,0]
         slack_optimal = pivoting.iloc[1:,0].tolist()
@@ -449,7 +464,8 @@ def Branch_And_Bound(optimal_solution_Simplex):
         var_counter = 0
 
         for var_counter in range(len(pivot_row_record)):
-            var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            if pivot_column_record[var_counter]-1 <= len(variable_names):
+                var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
             var_counter += 1
         
         # add back fixed variable (ceiling value) to the optimal solution
@@ -506,7 +522,6 @@ def Branch_And_Bound(optimal_solution_Simplex):
             int_con_sol_var.append(optimal_solution_Simplex[1][integer_index])
             
         list_int_checker(int_con_sol_var)
-        print(int_counter)
         
         runtime_counter += 1
         
