@@ -9,12 +9,12 @@
 
     
     
-# Last Updated: 3rd August 2018
+# Last Updated: 9th August 2018
 
 # Possible Further Improvement:
-    # 1. add functionality that computing how much can be changed before optimal solution changes
-    # 2. maybe limit the bound changes only to soft constraints
-    # 3. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
+
+    # 1. maybe limit the bound changes only to soft constraints
+    # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
 
 
 
@@ -26,17 +26,18 @@ from explp import solve
 
 
 # Firstly to record Optimal Solution
+try: 
+    optimal_solution_Branch_and_Bound = copy.deepcopy(Deep_Copy_Branch_and_Bound)
+except NameError:
+    NoFeasibleSolution = True    
 
-Simplex_Solution = Simplex()
-
-try:
-    len(Simplex_Solution[0])
-except TypeError:
-    NoFeasibleSolution = True
-else:
-    tableau = Simplex_Solution[0]
-    optimal_solution_Simplex = Simplex_Solution[1]
-    NoFeasibleSolution = False
+    try:
+        optimal_solution_Simplex = copy.deepcopy(Deep_Copy_Simplex)
+    except NameError:
+        NoFeasibleSolution = True
+    else:
+        tableau = copy.deepcopy(Deep_Copy_tableau)
+        NoFeasibleSolution = False
     
     
 # optimal varible sensitivity analysis function
@@ -893,6 +894,10 @@ def Sensitivity_Analysis():
     print('respectively.\n')
     
     print('If bounds are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Con_Bou.iloc[2,1]) + ' .\n')
+    
+    print('The slack value shows that how much each constraint can be changed before it will be violated.\n')
+    print('Specifically, ')
+    
     print('The following graphs have shown the impacts on the objective value by changing the bound for each constraint: \n')
     
     # plot the objective value against changes in each bound
