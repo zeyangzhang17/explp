@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 9th August 2018
+# Last Updated: 3rd August 2018
 
 
 
@@ -213,13 +213,19 @@ def complete():
         
         if obj_max == True:
             print("To Maximise " + str(obj_names[0]) + " = ", end="")
+            
+            for print_counter in range(len(variable_names)-1):
+                print(str(obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+                print_counter += 1
+            print(str(obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
+        
         else:
             print("To Minimise " + str(obj_names[0]) + " = ", end="")
             
-        for print_counter in range(len(variable_names)-1):
-            print(str(obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
-            print_counter += 1
-        print(str(obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
+            for print_counter in range(len(variable_names)-1):
+                print(str(-obj_coef[print_counter]) + " * " + str(variable_names[print_counter]) + " + ", end = "")
+                print_counter += 1
+            print(str(-obj_coef[-1]) + " * " + str(variable_names[-1]) + " ; \n")
               
     except NameError:
         print("\n(Note: You havn't set any single objective.)\n")
