@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 3rd August 2018
+# Last Updated: 9th August 2018
 
 
 
@@ -175,7 +175,7 @@ def integer_constraint(Integer_Variable_Names = []):
     index_counter = 0
     
     for index_counter in range(len(Integer_Variable_Names)):
-        Integer_Index.append(obj_names.index(Integer_Variable_Names[index_counter]))
+        Integer_Index.append(variable_names.index(Integer_Variable_Names[index_counter]))
         index_counter += 1
     
     Integer_Variable_Name = Integer_Variable_Names
@@ -269,9 +269,9 @@ def complete():
         for print_counter in range(len(constraint_names)):
             print(str(constraint_type[print_counter]) + " constraints: " + str(constraint_names[print_counter]) + " : ", end = "")
             for var_counter in range(len(variable_names)-1):
-                print(str(constraint[print_counter][var_counter]) + " * " + str(variable_names[var_counter]) + " + ", end = "")
+                print(str(Deep_Copy_constraint[1][print_counter][var_counter]) + " * " + str(variable_names[var_counter]) + " + ", end = "")
                 var_counter += 1
-            print(str(constraint[print_counter][-1]) + " * " + str(variable_names[-1]) + " <= " + str(bound[print_counter]) + " ; \n")
+            print(str(Deep_Copy_constraint[1][print_counter][-1]) + " * " + str(variable_names[-1]) + " <= " + str(bound[print_counter]) + " ; \n")
             print_counter += 1         
               
     except NameError:
