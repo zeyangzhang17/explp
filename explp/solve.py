@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 8th August 2018
+# Last Updated: 9th August 2018
 
 
 
@@ -206,6 +206,9 @@ def Simplex():
 def Branch_And_Bound(optimal_solution_Simplex):
     
     global optimal_solution_Branch_and_Bound, NoFeasibleSolution
+    global Floor_NoFS, Floor_optimal_solution_Simplex
+    global Ceiling_NoFS, Ceiling_optimal_solution_Simplex
+    
     
     # firstly do relaxation of all integer constraints 
     # i.e. to use Simplex algorithm to find global optimal as upper bound
@@ -215,7 +218,7 @@ def Branch_And_Bound(optimal_solution_Simplex):
     non_int_con_sol_obj = copy.deepcopy(optimal_solution_Simplex[0])
     non_int_con_sol_var = copy.deepcopy(optimal_solution_Simplex[1])
     non_int_con_sol_slack = copy.deepcopy(optimal_solution_Simplex[2])
-    
+
     # record all interger constrained variables
     
     int_con_sol_var = []
@@ -269,8 +272,6 @@ def Branch_And_Bound(optimal_solution_Simplex):
         
         
         # Branch 1: Floor
-        
-        global Floor_NoFS, Floor_optimal_solution_Simplex
                 
         # take the targetted non-integer variable out of objectives and constraints
         
@@ -363,16 +364,11 @@ def Branch_And_Bound(optimal_solution_Simplex):
         var_optimal.insert(bnb_var_index, var_optimal.pop())
         
         Floor_optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
-        Floor_NoFS = NoFeasibleSolution
-
-        if NoFeasibleSolution == True:
-            print('\nThere is NO Feasible Solutions!\n')
+        Floor_NoFS = copy.deepcopy(NoFeasibleSolution)
 
 
         # Same for the ceiling
         # Branch 2: Ceiling
-       
-        global Ceiling_NoFS, Ceiling_optimal_solution_Simplex
         
         pivoting_ceiling.iloc[:,0] -= pivoting_ceiling.iloc[:,bnb_var_index+1] * (pivoting_ceiling.iloc[0,bnb_var_index+1] * ceil_bnb)
         pivoting_ceiling.drop([variable_names[bnb_var_index]], axis = 1)
@@ -440,10 +436,6 @@ def Branch_And_Bound(optimal_solution_Simplex):
                 else:
                     continue
 
-            if times_counter >= 1000:
-                print('Error! Too Many Iterations! Maybe caused by the cycling Pivoting Table !')
-                NoFeasibleSolution = True
-                break
 
         obj_optimal = pivoting.iloc[0,0]
         slack_optimal = pivoting.iloc[1:,0].tolist()
@@ -466,16 +458,13 @@ def Branch_And_Bound(optimal_solution_Simplex):
         var_optimal.insert(bnb_var_index, var_optimal.pop())
 
         Ceiling_optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
-        Ceiling_NoFS = NoFeasibleSolution
-
-        if NoFeasibleSolution == True:
-            print('\nThere is NO Feasible Solutions!\n')
+        Ceiling_NoFS = copy.deepcopy(NoFeasibleSolution)
 
         
         # Comparing Floor branch and Ceiling Branch
         
         if Floor_NoFS == True and Ceiling_NoFS == True:
-            
+            print('Error! There is NO Feasible Solutions! Maybe caused by the Triangle Situation !\n')
             break
         
         elif Floor_NoFS == True and Ceiling_NoFS == False:
@@ -507,20 +496,21 @@ def Branch_And_Bound(optimal_solution_Simplex):
         # For possible further iterations, set optimal_solution_Simplex to current solution
         
         optimal_solution_Simplex = copy.deepcopy([non_int_con_sol_obj, non_int_con_sol_var, non_int_con_sol_slack])
-        
+
         # check if all integer constraints are met now
         # if not, return all_int == False and iterate again
         
         int_con_sol_var = []
     
         for integer_index in Integer_Index:
-            int_con_sol_var.append(non_int_con_sol_var[integer_index])
+            int_con_sol_var.append(optimal_solution_Simplex[1][integer_index])
             
         list_int_checker(int_con_sol_var)
+        print(int_counter)
         
         runtime_counter += 1
         
-        if runtime_counter > 2 ** int(len(variable_names)):
+        if runtime_counter > int(len(variable_names) ** len(variable_names)):
             print('Error! Too Many Iterations! Maybe caused by the Triangle Situation !\n')
             NoFeasibleSolution == True
             break
@@ -530,10 +520,10 @@ def Branch_And_Bound(optimal_solution_Simplex):
 
     # sort the solution into the same form as Simplex Function for futher iterations
     if all_int == True:           
-        obj_BB = non_int_con_sol_obj
-        var_BB = non_int_con_sol_var
-        slack_BB = non_int_con_sol_slack
-        optimal_solution_Branch_and_Bound = [obj_BB, var_BB, slack_BB]  
+        obj_BB = copy.deepcopy(non_int_con_sol_obj)
+        var_BB = copy.deepcopy(non_int_con_sol_var)
+        slack_BB = copy.deepcopy(non_int_con_sol_slack)
+        optimal_solution_Branch_and_Bound = copy.deepcopy([obj_BB, var_BB, slack_BB]) 
         NoFeasibleSolution == False
         print('\nAll integer constraints are met !\n')  
         
