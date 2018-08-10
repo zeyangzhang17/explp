@@ -522,7 +522,7 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
         if NoFeasibleSolution == True:
             new_optimal_m50.append('INFESIBLE')
         else:
-            new_optimal_m50.append(bound_m50[1][0])
+            new_optimal_m50.append(bound_m50)
 
         #
         
