@@ -11,11 +11,6 @@
     
 # Last Updated: 10th August 2018
 
-# Possible Further Improvement:
-
-    # 1. maybe limit the bound changes only to soft constraints
-    # 2. add sensitivity analysis for MILP, right now only supportive to Simplex Algorithm
-
 
 
 import numpy as np
@@ -50,6 +45,7 @@ def Optimal_Var(optimal_solution_Simplex):
     global table_var_changes
     
     optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
+    constraint_value = copy.deepcopy(Deep_Copy_constraint[1])
     
     optimal_objective_value = optimal_solution[0]
     optimal_variable_value = optimal_solution[1]
@@ -97,34 +93,34 @@ def Optimal_Var(optimal_solution_Simplex):
         
         for constraint_counter in range(len(constraint_names)):
             
-            if constraint[constraint_counter][variable_counter]*(-1) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*(-1) > optimal_slack_value[constraint_counter]:
                 temp_list_minus.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*1 > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*1 > optimal_slack_value[constraint_counter]:
                 temp_list_plus.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-1) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-1) > optimal_slack_value[constraint_counter]:
                 temp_list_m100.append(constraint_names[constraint_counter])
             
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.5) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.5) > optimal_slack_value[constraint_counter]:
                 temp_list_m50.append(constraint_names[constraint_counter])
   
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.25) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.25) > optimal_slack_value[constraint_counter]:
                 temp_list_m25.append(constraint_names[constraint_counter])
             
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.1) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(-0.1) > optimal_slack_value[constraint_counter]:
                 temp_list_m10.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.1) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.1) > optimal_slack_value[constraint_counter]:
                 temp_list_p10.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.25) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.25) > optimal_slack_value[constraint_counter]:
                 temp_list_p25.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.5) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(0.5) > optimal_slack_value[constraint_counter]:
                 temp_list_p50.append(constraint_names[constraint_counter])
                 
-            if constraint[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(1) > optimal_slack_value[constraint_counter]:
+            if constraint_value[constraint_counter][variable_counter]*optimal_variable_value[variable_counter]*(1) > optimal_slack_value[constraint_counter]:
                 temp_list_p100.append(constraint_names[constraint_counter])
                 
             constraint_counter += 1
@@ -284,111 +280,119 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] -= 1
-        obj_minus = Simplex()
+        Simplex()
+        obj_minus = optimal_solution_Simplex[0]
         
         if NoFeasibleSolution == True:
             new_optimal_minus.append('INFESIBLE')
         else:
-            new_optimal_minus.append(obj_minus[1][0])
+            new_optimal_minus.append(obj_minus)
             
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] += 1
-        obj_plus = Simplex()
+        Simplex()
+        obj_plus = optimal_solution_Simplex[0]
         
         if NoFeasibleSolution == True:
             new_optimal_plus.append('INFESIBLE')
         else:
-            new_optimal_plus.append(obj_plus[1][0])
+            new_optimal_plus.append(obj_plus)
         
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = 0
-        obj_m100 = Simplex()   
+        Simplex() 
+        obj_m100 = optimal_solution_Simplex[0]  
         
         if NoFeasibleSolution == True:
             new_optimal_m100.append('INFESIBLE')
         else:
-            new_optimal_m100.append(obj_m100[1][0])
+            new_optimal_m100.append(obj_m100)
         
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.5
-        obj_m50 = Simplex()   
+        Simplex() 
+        obj_m50 = optimal_solution_Simplex[0]  
         
         if NoFeasibleSolution == True:
             new_optimal_m50.append('INFESIBLE')
         else:
-            new_optimal_m50.append(obj_m50[1][0])
+            new_optimal_m50.append(obj_m50)
 
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.75
-        obj_m25 = Simplex()   
+        Simplex()
+        obj_m25 = optimal_solution_Simplex[0] 
         
         if NoFeasibleSolution == True:
             new_optimal_m25.append('INFESIBLE')
         else:
-            new_optimal_m25.append(obj_m25[1][0])    
+            new_optimal_m25.append(obj_m25)    
             
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.9
-        obj_m10 = Simplex()   
-        
+        obj_m10 = optimal_solution_Simplex[0]  
+        Simplex() 
         if NoFeasibleSolution == True:
             new_optimal_m10.append('INFESIBLE')
         else:
-            new_optimal_m10.append(obj_m10[1][0])
+            new_optimal_m10.append(obj_m10)
             
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.1
-        obj_p10 = Simplex()   
-        
+        obj_p10 = optimal_solution_Simplex[0]   
+        Simplex() 
         if NoFeasibleSolution == True:
             new_optimal_p10.append('INFESIBLE')
         else:
-            new_optimal_p10.append(obj_p10[1][0])
+            new_optimal_p10.append(obj_p10)
         
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.25
-        obj_p25 = Simplex()   
+        Simplex() 
+        obj_p25 = optimal_solution_Simplex[0]     
         
         if NoFeasibleSolution == True:
             new_optimal_p25.append('INFESIBLE')
         else:
-            new_optimal_p25.append(obj_p25[1][0])
+            new_optimal_p25.append(obj_p25)
 
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.5
-        obj_p50 = Simplex()   
+        Simplex()
+        obj_p50 = optimal_solution_Simplex[0]      
         
         if NoFeasibleSolution == True:
             new_optimal_p50.append('INFESIBLE')
         else:
-            new_optimal_p50.append(obj_p50[1][0])
+            new_optimal_p50.append(obj_p50)
             
         #
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*2
-        obj_p100 = Simplex()   
+        Simplex()
+        obj_p100 = optimal_solution_Simplex[0]  
         
         if NoFeasibleSolution == True:
             new_optimal_p100.append('INFESIBLE')
         else:
-            new_optimal_p100.append(obj_p100[1][0]) 
+            new_optimal_p100.append(obj_p100) 
         
         #
         
@@ -476,40 +480,44 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] -= 1
-        bound_minus = Simplex()   
+        Simplex()  
+        bound_minus = optimal_solution_Simplex[0] 
         
         if NoFeasibleSolution == True:
             new_optimal_minus.append('INFESIBLE')
         else:
-            new_optimal_minus.append(bound_minus[1][0])
+            new_optimal_minus.append(bound_minus)
         
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] += 1
-        bound_plus = Simplex()
+        Simplex()  
+        bound_plus = optimal_solution_Simplex[0] 
         
         if NoFeasibleSolution == True:
             new_optimal_plus.append('INFESIBLE')
         else:
-            new_optimal_plus.append(bound_plus[1][0])
+            new_optimal_plus.append(bound_plus)
         
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = 0
-        bound_m100 = Simplex()   
+        Simplex() 
+        bound_m100 = optimal_solution_Simplex[0]   
         
         if NoFeasibleSolution == True:
             new_optimal_m100.append('INFESIBLE')
         else:
-            new_optimal_m100.append(bound_m100[1][0])
+            new_optimal_m100.append(bound_m100)
         
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.5
-        bound_m50 = Simplex()   
+        Simplex() 
+        bound_m50 = optimal_solution_Simplex[0]   
         
         if NoFeasibleSolution == True:
             new_optimal_m50.append('INFESIBLE')
@@ -520,67 +528,73 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.75
-        bound_m25 = Simplex()   
+        Simplex()
+        bound_m25 = optimal_solution_Simplex[0]    
         
         if NoFeasibleSolution == True:
             new_optimal_m25.append('INFESIBLE')
         else:
-            new_optimal_m25.append(bound_m25[1][0])    
+            new_optimal_m25.append(bound_m25)    
             
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*0.9
-        bound_m10 = Simplex()   
+        Simplex()
+        bound_m10 = optimal_solution_Simplex[0]  
         
         if NoFeasibleSolution == True:
             new_optimal_m10.append('INFESIBLE')
         else:
-            new_optimal_m10.append(bound_m10[1][0])
+            new_optimal_m10.append(bound_m10)
             
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.1
-        bound_p10 = Simplex()   
+        Simplex()
+        bound_p10 = optimal_solution_Simplex[0]   
         
         if NoFeasibleSolution == True:
             new_optimal_p10.append('INFESIBLE')
         else:
-            new_optimal_p10.append(bound_p10[1][0])
+            new_optimal_p10.append(bound_p10)
         
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.25
-        bound_p25 = Simplex()   
+        Simplex()
+        bound_p25 = optimal_solution_Simplex[0]  
         
         if NoFeasibleSolution == True:
             new_optimal_p25.append('INFESIBLE')
         else:
-            new_optimal_p25.append(bound_p25[1][0])
+            new_optimal_p25.append(bound_p25)
 
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*1.5
-        bound_p50 = Simplex()   
+        Simplex()
+        bound_p50 = optimal_solution_Simplex[0]     
         
         if NoFeasibleSolution == True:
             new_optimal_p50.append('INFESIBLE')
         else:
-            new_optimal_p50.append(bound_p50[1][0])
+            new_optimal_p50.append(bound_p50)
             
         #
         
         bound = copy.deepcopy(original_con_bound)
         bound[bound_counter] = bound[bound_counter]*2
-        bound_p100 = Simplex()   
+        Simplex()
+        bound_p100 = optimal_solution_Simplex[0]   
         
         if NoFeasibleSolution == True:
             new_optimal_p100.append('INFESIBLE')
         else:
-            new_optimal_p100.append(bound_p100[1][0])   
+            new_optimal_p100.append(bound_p100)   
                
         #
         
@@ -649,9 +663,10 @@ def Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_sol
     global table_con_remove
     
     original_optimal_solution = copy.deepcopy(optimal_solution_Simplex[:])
+    constraint_value = copy.deepcopy(Deep_Copy_constraint[1])
     
     original_constraint_names = copy.deepcopy(constraint_names[:])
-    original_constraint = copy.deepcopy(constraint[:])
+    original_constraint = copy.deepcopy(constraint_value[:])
     original_bound = copy.deepcopy(bound[:])
     
     soft_con_index = []
@@ -681,19 +696,20 @@ def Con_Remove(constraint_names, constraint, constraint_type, bound, optimal_sol
         for soft_con_remove_counter in soft_con_index:
             
             constraint_names = copy.deepcopy(original_constraint_names)
-            constraint = copy.deepcopy(original_constraint)
+            constraint_value = copy.deepcopy(original_constraint)
             bound = copy.deepcopy(original_bound)
             
             del constraint_names[soft_con_remove_counter]
-            del constraint[soft_con_remove_counter]
+            del constraint_value[soft_con_remove_counter]
             del bound[soft_con_remove_counter]
             
-            Simplex_excl_soft = Simplex()
+            Simplex()
+            Simplex_excl_soft = optimal_solution_Simplex[0]
             
             if NoFeasibleSolution == True:
                 optimal_excl_soft.append('INFESIBLE')
             else:            
-                optimal_excl_soft.append(Simplex_excl_soft[1][0])
+                optimal_excl_soft.append(Simplex_excl_soft)
         
         spacing = '...'
 
