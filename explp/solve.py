@@ -7,7 +7,7 @@
 
     
     
-# Last Updated: 9th August 2018
+# Last Updated: 10th August 2018
 
 
 
@@ -168,7 +168,6 @@ def Simplex():
                 
             pi_count += 1
             
-        print(pivoting)
     obj_optimal = pivoting.iloc[0,0]
     
     # compute slack value in optimal solution
@@ -188,12 +187,26 @@ def Simplex():
     var_counter = 0
     
     for var_counter in range(len(pivot_row_record)):
-        if pivot_column_record[var_counter]-1 <= len(variable_names):
+        if pivot_column_record[var_counter] <= len(variable_names):
             var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+        else:
+            slack_optimal[pivot_column_record[var_counter]-1-len(variable_names)] = pivoting.iloc[pivot_row_record[var_counter],0]
         var_counter += 1
     
+    # in case multiple variables are assigned to the same row value, wipe the former values to 0
+    
+    repeat_counter = 0
+    
+    for repeat_counter in range(len(pivot_row_record)):
+        if pivot_row_record[repeat_counter] in pivot_row_record[repeat_counter+1:]:
+            if pivot_row_record[repeat_counter] <= len(variable_names):
+                var_optimal[pivot_row_record[repeat_counter]-1] = 0
+            else:
+                slack_optimal[pivot_row_record[repeat_counter]-1] = 0
+                
+        repeat_counter += 1
+    
     optimal_solution_Simplex = copy.deepcopy([obj_optimal, var_optimal, slack_optimal])
-    print(optimal_solution_Simplex)
     
     if NoFeasibleSolution == True:
         
@@ -363,12 +376,29 @@ def Branch_And_Bound(optimal_solution_Simplex):
             slack_counter += 1
 
         var_optimal = [0] * var_count
+
         var_counter = 0
-    
+
         for var_counter in range(len(pivot_row_record)):
-            if pivot_column_record[var_counter]-1 <= len(variable_names):
+            if pivot_column_record[var_counter] <= len(variable_names)-1:
                 var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            else:
+                slack_optimal[pivot_column_record[var_counter]-1-var_count] = pivoting.iloc[pivot_row_record[var_counter],0]
             var_counter += 1
+
+        # in case multiple variables are assigned to the same row value, wipe the former values to 0
+
+        repeat_counter = 0
+
+        for repeat_counter in range(len(pivot_row_record)):
+            if pivot_row_record[repeat_counter] in pivot_row_record[repeat_counter+1:]:
+                if pivot_row_record[repeat_counter] <= len(variable_names)-1:
+                    var_optimal[pivot_row_record[repeat_counter]-1] = 0
+                else:
+                    slack_optimal[pivot_row_record[repeat_counter]-1] = 0
+
+            repeat_counter += 1
+    
             
         # add back fixed variable (floor value) to the optimal solution
         
@@ -461,12 +491,28 @@ def Branch_And_Bound(optimal_solution_Simplex):
             slack_counter += 1
 
         var_optimal = [0] * var_count
+
         var_counter = 0
 
         for var_counter in range(len(pivot_row_record)):
-            if pivot_column_record[var_counter]-1 <= len(variable_names):
+            if pivot_column_record[var_counter] <= len(variable_names)-1:
                 var_optimal[pivot_column_record[var_counter]-1] = pivoting.iloc[pivot_row_record[var_counter],0]
+            else:
+                slack_optimal[pivot_column_record[var_counter]-1-var_count] = pivoting.iloc[pivot_row_record[var_counter],0]
             var_counter += 1
+
+        # in case multiple variables are assigned to the same row value, wipe the former values to 0
+
+        repeat_counter = 0
+
+        for repeat_counter in range(len(pivot_row_record)):
+            if pivot_row_record[repeat_counter] in pivot_row_record[repeat_counter+1:]:
+                if pivot_row_record[repeat_counter] <= len(variable_names)-1:
+                    var_optimal[pivot_row_record[repeat_counter]-1] = 0
+                else:
+                    slack_optimal[pivot_row_record[repeat_counter]-1] = 0
+
+            repeat_counter += 1
         
         # add back fixed variable (ceiling value) to the optimal solution
         
