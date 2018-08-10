@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 9th August 2018
+# Last Updated: 10th August 2018
 
 # Possible Further Improvement:
 
@@ -896,9 +896,18 @@ def Sensitivity_Analysis():
     print('If bounds are set to other values, the objective value ' + str(obj_names[0]) + ' might be changed and different from ' + str(SA_Con_Bou.iloc[2,1]) + ' .\n')
     
     print('The slack value shows that how much each constraint can be changed before it will be violated.\n')
-    print('Specifically, ')
+    slack_optimal_solution = copy.deepcopy(optimal_solution_Simplex[2])
+    print('The slack value for constraints ' + str(constraint_names[:]) + ' are ' + str(slack_optimal_solution[:]) + ' , respectively.\n')
+    print('Meaning that: \n')
+    slack_counter = 0
+    for slack_counter in range(len(constraint_names)):
+        if slack_optimal_solution[slack_counter] == 0:
+            print('No changes should be made in the constraint ' + str(constraint_names[slack_counter]) + ' , otherwise the constraint will be violated, and optimal solution might change as well;\n')
+        else:
+            print('The changes in the constraint ' + str(constraint_names[slack_counter]) + ' should not be exceeding ' + str(slack_optimal_solution[slack_counter]) + ' , otherwise the constraint will be violated, and optimal solution might change as well;\n')
+        slack_counter += 1
     
-    print('The following graphs have shown the impacts on the objective value by changing the bound for each constraint: \n')
+    print('\nThe following graphs have shown the impacts on the objective value by changing the bound for each constraint: \n')
     
     # plot the objective value against changes in each bound
     
