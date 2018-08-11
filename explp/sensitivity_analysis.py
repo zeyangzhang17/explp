@@ -387,8 +387,9 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*0.9
-        obj_m10 = optimal_solution_Simplex[0]  
         Simplex() 
+        obj_m10 = optimal_solution_Simplex[0]  
+        
         if NoFeasibleSolution == True:
             new_optimal_m10.append('INFESIBLE')
         else:
@@ -398,8 +399,9 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
         
         obj_coef = copy.deepcopy(original_obj_coef)
         obj_coef[coef_counter] = obj_coef[coef_counter]*1.1
-        obj_p10 = optimal_solution_Simplex[0]   
         Simplex() 
+        obj_p10 = optimal_solution_Simplex[0]   
+        
         if NoFeasibleSolution == True:
             new_optimal_p10.append('INFESIBLE')
         else:
