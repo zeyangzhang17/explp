@@ -9,7 +9,7 @@
 
     
     
-# Last Updated: 10th August 2018
+# Last Updated: 11th August 2018
 
 
 
@@ -18,6 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import copy
 from explp import solve
+
 
 
 # Firstly to record Optimal Solution
@@ -776,7 +777,7 @@ def Sensitivity_Analysis():
     # change optimal solution for each variable
     
     SA_Opt_Var = Optimal_Var(optimal_solution_Simplex)
-    print(SA_Opt_Var)
+    display(SA_Opt_Var)
     
     print('\nThe table above shows that the best value for ' + str(obj_names[0]) + ' is ' + str(SA_Opt_Var.iloc[2,1]) + ', under the optimal solution, ')
     print('when the ' + str(len(variable_names)) + ' variables: ' + str(variable_names[:]) + ' , are set to: ')
@@ -839,7 +840,7 @@ def Sensitivity_Analysis():
     # change coefficients in objective function   
     
     SA_Obj_Coe = Obj_Coef(obj_coef, optimal_solution_Simplex)
-    print(SA_Obj_Coe)
+    display(SA_Obj_Coe)
     
     # return table_obj_coef
     
@@ -895,7 +896,7 @@ def Sensitivity_Analysis():
     # change bound value of each constraint
     
     SA_Con_Bou = Con_Bound(bound, constraint_names, optimal_solution_Simplex)
-    print(SA_Con_Bou)
+    display(SA_Con_Bou)
     
     # return table_bound
     
@@ -969,7 +970,7 @@ def Sensitivity_Analysis():
     
     try:
         shape_checker = SA_Con_Rem.shape[0]
-        print(SA_Con_Rem)
+        display(SA_Con_Rem)
         
         soft_cons_index = [ind for ind, soft in enumerate(constraint_type) if soft == 'soft']
         soft_cons = [constraint_names[name_ind] for name_ind in soft_cons_index]
