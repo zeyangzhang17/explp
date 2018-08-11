@@ -4,7 +4,7 @@
 from setuptools import setup
 
 setup(name='explp',
-      version='0.0.1',
+      version='1.0.1',
       description='Generating Explanations of Linear Optimisation Solutions',
       url='https://github.com/zeyangzhang17/explp',
       author='Zeyang ZHANG',
