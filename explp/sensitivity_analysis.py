@@ -6,6 +6,12 @@
     # sensitivity_analysis.Con_Bound()
     # sensitivity_analysis.Con_Remove()
     # sensitivity_analysis.Sensitivity_Analysis()
+    
+    # sensitivity_analysis.MI_Optimal_Var()
+    # sensitivity_analysis.MI_Obj_Coef()
+    # sensitivity_analysis.MI_Con_Bound()
+    # sensitivity_analysis.MI_Con_Remove()
+    # sensitivity_analysis.MI_Sensitivity_Analysis()
 
     
     
@@ -183,7 +189,20 @@ def Optimal_Var(optimal_solution_Simplex):
         
     # form a dataframe to output results
     
-    col_var_changes = ['Optimal Solution - 1', 'Optimal Solution', 'Optimal Solution + 1', spacing, 'Optimal Solution - 100%', 'Optimal Solution - 50%', 'Optimal Solution - 25%', 'Optimal Solution - 10%', 'Optimal Solution', 'Optimal Solution + 10%', 'Optimal Solution + 25%', 'Optimal Solution + 50%', 'Optimal Solution + 100%']
+    col_var_changes = ['Optimal Solution - 1', 
+                       'Optimal Solution', 
+                       'Optimal Solution + 1', 
+                       spacing, 
+                       'Optimal Solution - 100%', 
+                       'Optimal Solution - 50%', 
+                       'Optimal Solution - 25%', 
+                       'Optimal Solution - 10%', 
+                       'Optimal Solution', 
+                       'Optimal Solution + 10%', 
+                       'Optimal Solution + 25%', 
+                       'Optimal Solution + 50%', 
+                       'Optimal Solution + 100%']
+    
     row_var_changes = []
     
     row_counter = 0
@@ -209,8 +228,35 @@ def Optimal_Var(optimal_solution_Simplex):
     for fill_counter in range(0,4*(len(variable_names)-1)+1,4):
     
         table_var_changes.iloc[fill_counter,:] = [spacing]*13
-        table_var_changes.iloc[fill_counter+1,:] = [optimal_variable_value[int(fill_counter/4)]-1, optimal_variable_value[int(fill_counter/4)], optimal_variable_value[int(fill_counter/4)]+1, spacing, 0, optimal_variable_value[int(fill_counter/4)]*0.5, optimal_variable_value[int(fill_counter/4)]*0.75, optimal_variable_value[int(fill_counter/4)]*0.9, optimal_variable_value[int(fill_counter/4)], optimal_variable_value[int(fill_counter/4)]*1.1, optimal_variable_value[int(fill_counter/4)]*1.25, optimal_variable_value[int(fill_counter/4)]*1.5, optimal_variable_value[int(fill_counter/4)]*2] 
-        table_var_changes.iloc[fill_counter+2,:] = [optimal_objective_value-obj_coef[int(fill_counter/4)], optimal_objective_value, optimal_objective_value+obj_coef[int(fill_counter/4)], spacing, optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-1), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.5), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.25), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.1), optimal_objective_value, optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.1), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.25), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.5), optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(1)]
+        
+        table_var_changes.iloc[fill_counter+1,:] = [optimal_variable_value[int(fill_counter/4)]-1, 
+                                                    optimal_variable_value[int(fill_counter/4)], 
+                                                    optimal_variable_value[int(fill_counter/4)]+1, 
+                                                    spacing, 
+                                                    0, 
+                                                    optimal_variable_value[int(fill_counter/4)]*0.5, 
+                                                    optimal_variable_value[int(fill_counter/4)]*0.75, 
+                                                    optimal_variable_value[int(fill_counter/4)]*0.9, 
+                                                    optimal_variable_value[int(fill_counter/4)], 
+                                                    optimal_variable_value[int(fill_counter/4)]*1.1, 
+                                                    optimal_variable_value[int(fill_counter/4)]*1.25, 
+                                                    optimal_variable_value[int(fill_counter/4)]*1.5, 
+                                                    optimal_variable_value[int(fill_counter/4)]*2] 
+        
+        table_var_changes.iloc[fill_counter+2,:] = [optimal_objective_value-obj_coef[int(fill_counter/4)], 
+                                                    optimal_objective_value, 
+                                                    optimal_objective_value+obj_coef[int(fill_counter/4)], 
+                                                    spacing, 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-1), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.5), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.25), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(-0.1), 
+                                                    optimal_objective_value, 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.1), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.25), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(0.5), 
+                                                    optimal_objective_value-obj_coef[int(fill_counter/4)]*optimal_variable_value[int(fill_counter/4)]*(1)]
+        
         table_var_changes.iloc[fill_counter+3,0] = violated_constraint_minus[int(fill_counter/4)]
         table_var_changes.iloc[fill_counter+3,1] = None
         table_var_changes.iloc[fill_counter+3,2] = violated_constraint_plus[int(fill_counter/4)]
@@ -422,8 +468,34 @@ def Obj_Coef(obj_coef, optimal_solution_Simplex):
     for fill_counter in range(0,4*(len(variable_names)-1)+1,4):
     
         table_obj_coef.iloc[fill_counter,:] = [spacing]*13
-        table_obj_coef.iloc[fill_counter+1,:] = [original_obj_coef[int(fill_counter/4)]-1, original_obj_coef[int(fill_counter/4)], original_obj_coef[int(fill_counter/4)]+1, spacing, 0, original_obj_coef[int(fill_counter/4)]*0.5, original_obj_coef[int(fill_counter/4)]*0.75, original_obj_coef[int(fill_counter/4)]*0.9, original_obj_coef[int(fill_counter/4)], original_obj_coef[int(fill_counter/4)]*1.1, original_obj_coef[int(fill_counter/4)]*1.25, original_obj_coef[int(fill_counter/4)]*1.5, original_obj_coef[int(fill_counter/4)]*2] 
-        table_obj_coef.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)], spacing, new_optimal_m100[int(fill_counter/4)], new_optimal_m50[int(fill_counter/4)], new_optimal_m25[int(fill_counter/4)], new_optimal_m10[int(fill_counter/4)], original_optimal_solution[0], new_optimal_p10[int(fill_counter/4)], new_optimal_p25[int(fill_counter/4)], new_optimal_p50[int(fill_counter/4)], new_optimal_p100[int(fill_counter/4)]]
+        
+        table_obj_coef.iloc[fill_counter+1,:] = [original_obj_coef[int(fill_counter/4)]-1, 
+                                                 original_obj_coef[int(fill_counter/4)], 
+                                                 original_obj_coef[int(fill_counter/4)]+1, 
+                                                 spacing, 
+                                                 0, 
+                                                 original_obj_coef[int(fill_counter/4)]*0.5, 
+                                                 original_obj_coef[int(fill_counter/4)]*0.75, 
+                                                 original_obj_coef[int(fill_counter/4)]*0.9, 
+                                                 original_obj_coef[int(fill_counter/4)], 
+                                                 original_obj_coef[int(fill_counter/4)]*1.1, 
+                                                 original_obj_coef[int(fill_counter/4)]*1.25, 
+                                                 original_obj_coef[int(fill_counter/4)]*1.5, 
+                                                 original_obj_coef[int(fill_counter/4)]*2] 
+        
+        table_obj_coef.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], 
+                                                 original_optimal_solution[0], 
+                                                 new_optimal_plus[int(fill_counter/4)], 
+                                                 spacing, 
+                                                 new_optimal_m100[int(fill_counter/4)], 
+                                                 new_optimal_m50[int(fill_counter/4)], 
+                                                 new_optimal_m25[int(fill_counter/4)], 
+                                                 new_optimal_m10[int(fill_counter/4)], 
+                                                 original_optimal_solution[0], 
+                                                 new_optimal_p10[int(fill_counter/4)], 
+                                                 new_optimal_p25[int(fill_counter/4)], 
+                                                 new_optimal_p50[int(fill_counter/4)], 
+                                                 new_optimal_p100[int(fill_counter/4)]]
         
         infeasible_counter = 0
         
@@ -603,7 +675,20 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
     
     spacing = '...'
     
-    col_bound = ['Bound Value - 1', 'Bound Value', 'Bound Value + 1', spacing, 'Bound Value - 100%', 'Bound Value - 50%', 'Bound Value - 25%', 'Bound Value - 10%', 'Bound Value', 'Bound Value + 10%', 'Bound Value + 25%', 'Bound Value + 50%', 'Bound Value + 100%']
+    col_bound = ['Bound Value - 1', 
+                 'Bound Value', 
+                 'Bound Value + 1', 
+                 spacing, 
+                 'Bound Value - 100%', 
+                 'Bound Value - 50%', 
+                 'Bound Value - 25%', 
+                 'Bound Value - 10%', 
+                 'Bound Value', 
+                 'Bound Value + 10%', 
+                 'Bound Value + 25%', 
+                 'Bound Value + 50%', 
+                 'Bound Value + 100%']
+    
     row_bound = []
     
     row_counter = 0
@@ -624,8 +709,34 @@ def Con_Bound(bound, constraint_names, optimal_solution_Simplex):
     for fill_counter in range(0,4*(len(constraint_names)-1)+1,4):
     
         table_bound.iloc[fill_counter,:] = [spacing]*13
-        table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]+1, spacing, 0, original_con_bound[int(fill_counter/4)]*0.5, original_con_bound[int(fill_counter/4)]*0.75, original_con_bound[int(fill_counter/4)]*0.9, original_con_bound[int(fill_counter/4)], original_con_bound[int(fill_counter/4)]*1.1, original_con_bound[int(fill_counter/4)]*1.25, original_con_bound[int(fill_counter/4)]*1.5, original_con_bound[int(fill_counter/4)]*2]
-        table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], original_optimal_solution[0], new_optimal_plus[int(fill_counter/4)], spacing, new_optimal_m100[int(fill_counter/4)], new_optimal_m50[int(fill_counter/4)], new_optimal_m25[int(fill_counter/4)], new_optimal_m10[int(fill_counter/4)], original_optimal_solution[0], new_optimal_p10[int(fill_counter/4)], new_optimal_p25[int(fill_counter/4)], new_optimal_p50[int(fill_counter/4)], new_optimal_p100[int(fill_counter/4)]]
+        
+        table_bound.iloc[fill_counter+1,:] = [original_con_bound[int(fill_counter/4)]-1, 
+                                              original_con_bound[int(fill_counter/4)], 
+                                              original_con_bound[int(fill_counter/4)]+1, 
+                                              spacing, 
+                                              0, 
+                                              original_con_bound[int(fill_counter/4)]*0.5, 
+                                              original_con_bound[int(fill_counter/4)]*0.75, 
+                                              original_con_bound[int(fill_counter/4)]*0.9, 
+                                              original_con_bound[int(fill_counter/4)], 
+                                              original_con_bound[int(fill_counter/4)]*1.1, 
+                                              original_con_bound[int(fill_counter/4)]*1.25, 
+                                              original_con_bound[int(fill_counter/4)]*1.5, 
+                                              original_con_bound[int(fill_counter/4)]*2]
+        
+        table_bound.iloc[fill_counter+2,:] = [new_optimal_minus[int(fill_counter/4)], 
+                                              original_optimal_solution[0], 
+                                              new_optimal_plus[int(fill_counter/4)], 
+                                              spacing, 
+                                              new_optimal_m100[int(fill_counter/4)], 
+                                              new_optimal_m50[int(fill_counter/4)], 
+                                              new_optimal_m25[int(fill_counter/4)], 
+                                              new_optimal_m10[int(fill_counter/4)], 
+                                              original_optimal_solution[0], 
+                                              new_optimal_p10[int(fill_counter/4)], 
+                                              new_optimal_p25[int(fill_counter/4)], 
+                                              new_optimal_p50[int(fill_counter/4)], 
+                                              new_optimal_p100[int(fill_counter/4)]]
         
         infeasible_counter = 0
         
